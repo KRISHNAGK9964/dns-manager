@@ -22,16 +22,17 @@ export default async function handler(
     const { name , email} = body as any;
     await connectMongoDB();
     console.log(name , email);  
-    
-    await User.create({ name, email });
-    console.log("user created");
+    const userExists = await User.findOne({email});
+    if(!userExists){
+      await User.create({ name, email });
+      console.log("user created");
+    }
     
     return res.status(201).json({ message: "User Registered" });
     
   } catch (error:any) {
     console.log("user creation error",error?.message);
-    res.end();
+    res.status(400);
   }
 
-  // res.status(200).json({ name: "John Doe" });
 }
