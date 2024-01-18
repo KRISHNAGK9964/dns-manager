@@ -4,7 +4,7 @@ import React from "react";
 interface settingsProps {}
 const settings: React.FC<settingsProps> = ({}) => {
   return (
-    <div>
+    <div className="">
       <Header />
       settings
     </div>

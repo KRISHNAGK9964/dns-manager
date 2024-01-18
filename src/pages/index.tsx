@@ -24,7 +24,7 @@ const Home: React.FC<homeProps> = ({}) => {
   }, [session]);
 
   return (
-    <div className="flex flex-col min-h-screen border-4">
+    <div className="flex flex-col min-h-screen ">
       <Header />
       <section className="flex-1">
         <Homepage />
@@ -35,26 +35,3 @@ const Home: React.FC<homeProps> = ({}) => {
 };
 
 export default Home;
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/19ZGqktdArp
- */
-
-function CloudIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-    </svg>
-  );
-}

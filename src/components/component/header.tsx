@@ -24,7 +24,7 @@ const Header: React.FC<headerProps> = ({}) => {
 
   
   return (
-    <header className="px-4 lg:px-6  flex items-center border-b">
+    <header className="px-4 lg:px-6  flex items-center border-b bg-gray-50">
       <Link className="flex items-center justify-center mr-8" href="#">
         <CloudIcon className="h-6 w-6" />
         <span className="sr-only">Vercel</span>
