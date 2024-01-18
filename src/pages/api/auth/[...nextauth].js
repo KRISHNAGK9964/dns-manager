@@ -4,13 +4,14 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 // import { OAuth2Client } from "google-auth-library";
 
+// console.log(process.env.GoogleClientId);
 export const authOptions = {
   // Configure one or more authentication providers
   providers: [
-    GithubProvider({
-      clientId: process.env.GithubClientId,
-      clientSecret: process.env.GithubClientSecret,
-    }),
+    // GithubProvider({
+    //   clientId: process.env.GithubClientId,
+    //   clientSecret: process.env.GithubClientSecret,
+    // }),
     GoogleProvider({
       clientId: process.env.GoogleClientId,
       clientSecret: process.env.GoogleClientSecret,
@@ -49,12 +50,43 @@ export const authOptions = {
         return user;
       },
     }),
-    
   ],
+  session: {
+    strategy: "jwt", // must for credentialProvider
+  },
+  callbacks: {
+    async signIn({ user, account }) {
+      console.log("User:", user);
+      console.log("Account:", account);
+
+      if (account.provider === "google") {
+        const { name, email } = user;
+        try {
+          const res = await fetch("http://localhost:3000/api/user/create", {
+            method: "POST",
+            headers: {
+              Content_Type: "application/json",
+            },
+            body: JSON.stringify({
+              name,
+              email,
+            }),
+          });
+
+          if(res.ok){
+            return user;
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      return user;
+    },
+  },
   secret: process.env.NEXTAUTH_SECRET,
-  pages:{
-    signIn: '/signin',
-  }
+  pages: {
+    signIn: "/signin",
+  },
 };
 
 export default NextAuth(authOptions);
