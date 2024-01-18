@@ -1,8 +1,28 @@
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import React, { SVGProps } from "react";
+import { useRouter } from "next/router";
+import React, { SVGProps, useEffect, useState } from "react";
+import { DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
 
 interface headerProps {}
+
 const Header: React.FC<headerProps> = ({}) => {
+  const router = useRouter();
+  let activeTab = "Overview";
+  if (router.pathname === "/settings") {
+    activeTab = "Settings";
+  } else if (router.pathname === "/domains") {
+    activeTab = "Domains";
+  }
+
+  const [profilePic, setProfilePic] = useState("");
+  const { data: session, status } = useSession();
+  useEffect(()=>{
+    if(session?.user?.image) setProfilePic(session.user.image);
+  },[session]);
+
+  
   return (
     <header className="px-4 lg:px-6  flex items-center border-b">
       <Link className="flex items-center justify-center mr-8" href="#">
@@ -12,32 +32,62 @@ const Header: React.FC<headerProps> = ({}) => {
       <div className="border-gray-200 dark:border-gray-700">
         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
           <li className="me-2">
-            <a
+            <Link
               href="/"
-              className="inline-flex items-center justify-center p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500 group"
+              className={`inline-flex items-center justify-center p-4  border-b-2  rounded-t-lg ${
+                activeTab === "Overview"
+                  ? "text-blue-600 border-b-blue-600"
+                  : "hover:text-gray-600 hover:border-gray-300"
+              }   dark:text-blue-500 dark:border-blue-500 group`}
               aria-current="page"
             >
-              <DashboardIcon className="w-4 h-4 me-2 text-blue-600 dark:text-blue-500" />
+              <DashboardIcon
+                className={`w-4 h-4 me-2 ${
+                  activeTab === "Overview"
+                    ? "text-blue-600"
+                    : " text-gray-400 group-hover:text-gray-500"
+                }   dark:text-blue-500`}
+              />
               Overview
-            </a>
+            </Link>
           </li>
           <li className="me-2">
-            <a
+            <Link
               href="/settings"
-              className="inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"
+              className={`inline-flex items-center justify-center p-4  border-b-2  rounded-t-lg ${
+                activeTab === "Settings"
+                  ? "text-blue-600 border-b-blue-600"
+                  : "hover:text-gray-600 hover:border-gray-300"
+              }   dark:text-blue-500 dark:border-blue-500 group`}
             >
-              <SettingsIcon className="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300" />
+              <SettingsIcon
+                className={`w-4 h-4 me-2 ${
+                  activeTab === "Settings"
+                    ? "text-blue-600"
+                    : " text-gray-400 group-hover:text-gray-500"
+                }   dark:text-blue-500`}
+              />
               Settings
-            </a>
+            </Link>
           </li>
           <li className="me-2">
-            <a
+            <Link
               href="/domains"
-              className="inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"
+              className={`inline-flex items-center justify-center p-4  border-b-2  rounded-t-lg ${
+                activeTab === "Domains"
+                  ? "text-blue-600 border-b-blue-600"
+                  : "hover:text-gray-600 hover:border-gray-300"
+              }   dark:text-blue-500 dark:border-blue-500 group`}
             >
-              <DomainsIcon className="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300" />
+              <DomainsIcon
+                className={`w-4 h-4 me-2 ${
+                  activeTab === "Domains"
+                    ? "text-blue-600"
+                    : " text-gray-400 group-hover:text-gray-500"
+                }   dark:text-blue-500`}
+              />
               Domains
-            </a>
+            </Link>
           </li>
         </ul>
       </div>
@@ -49,12 +99,45 @@ const Header: React.FC<headerProps> = ({}) => {
         >
           Docs
         </Link>
-        <Link
-          className="inline-flex h-9 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-          href="/signin"
-        >
-          Login / Sign Up
-        </Link>
+        { session ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                className="rounded-full border border-gray-200 w-8 h-8 dark:border-gray-800"
+                size="icon"
+                variant="ghost"
+              >
+                <img
+                  alt={""}
+                  className="rounded-full"
+                  height="32"
+                  src={profilePic}
+                  style={{
+                    aspectRatio: "32/32",
+                    objectFit: "cover",
+                  }}
+                  width="32"
+                />
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>{session.user?.email}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Support</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={()=>{signOut()}} className="cursor-pointer">Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Link
+            className="inline-flex h-9 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+            href="/signin"
+          >
+            Login / Sign Up
+          </Link>
+        )}
       </nav>
     </header>
   );

@@ -5,6 +5,7 @@ interface domainsProps {}
 const domains: React.FC<domainsProps> = () => {
   return (
     <div>
+      <Header />
       domains
     </div>
   );

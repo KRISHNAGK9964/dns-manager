@@ -5,6 +5,7 @@ interface settingsProps {}
 const settings: React.FC<settingsProps> = ({}) => {
   return (
     <div>
+      <Header />
       settings
     </div>
   );
