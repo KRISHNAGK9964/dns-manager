@@ -7,8 +7,8 @@ import { JSX, SVGProps, useEffect } from "react";
 import { Router, useRouter } from "next/router";
 import Header from "@/components/component/header";
 const inter = Inter({ subsets: ["latin"] });
-import { Kfk } from "@/components/component/kfk";
 import { Homepage } from "@/components/component/homepage";
+import Footer from "@/components/component/footer";
 interface homeProps {}
 
 const Home: React.FC<homeProps> = ({}) => {
@@ -24,26 +24,12 @@ const Home: React.FC<homeProps> = ({}) => {
   }, [session]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen border-4">
       <Header />
-      <main className="flex-1 ">
-      </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          © 2024 Vercel Inc. All rights reserved.
-        </p>
-        <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-          <Link className="text-xs hover:underline underline-offset-4" href="#">
-            Terms of Service
-          </Link>
-          <Link className="text-xs hover:underline underline-offset-4" href="#">
-            Privacy
-          </Link>
-          <Link className="text-xs hover:underline underline-offset-4" href="#">
-            Contact
-          </Link>
-        </nav>
-      </footer>
+      <section className="flex-1">
+        <Homepage />
+      </section>
+      <Footer />
     </div>
   );
 };
