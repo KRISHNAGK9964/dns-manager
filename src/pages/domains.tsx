@@ -28,9 +28,29 @@ const domains: React.FC<domainsProps> = () => {
   } = useForm<DomainModalFormData>();
 
   //onsubmission of form modal
-  const onSubmit = handleSubmit((formData) => {
-    console.log("hi");
+  const onSubmit = handleSubmit(async (formData) => {
     console.log(formData);
+    try {
+      const res = await fetch('http://localhost:3000/api/domain/create',{
+        method: "POST",
+        headers:{
+          Content_Type : 'application/json'
+        },
+        body : JSON.stringify({
+          name : formData.domain 
+        })
+
+      })
+
+      if(res.ok){
+        console.log("Domain created");
+        const text = await res.text();
+        console.log(text);
+      }
+    } catch (error) {
+      console.log(error);
+    
+    }
   });
 
   return (

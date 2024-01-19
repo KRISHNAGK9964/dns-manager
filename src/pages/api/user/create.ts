@@ -1,6 +1,5 @@
 import { connectMongoDB } from "../../../lib/mongodb";
 import User from "../../../models/user";
-import { NextRequest, NextResponse } from "next/server";
 
 // // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -10,7 +9,7 @@ type Data = {
 };
 
 export default async function handler(
-  req: NextRequest,
+  req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
   try {
