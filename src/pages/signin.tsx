@@ -23,7 +23,7 @@ const Signin: React.FC<signinProps> = ({}) => {
 
   //onsubmission of form login if no account then signin
   const onSubmit = handleSubmit((formData) => {
-    // console.log(formData);
+    console.log(formData);
   });
 
   // signin with google provider
