@@ -12,13 +12,14 @@ export default async function handler(req: NextApiRequest , res:NextApiResponse)
       //incase of request from localhost
       body = JSON.parse(req.body as unknown as string);
     }
-    const {name} = body;
+    const id = body._id;
+    console.log(body);
     await connectMongoDB();
-    await Domain.create({name});
+    await Domain.deleteOne({_id: id});
     
-    return res.status(201).json({message: 'Domain created'});
+    return res.status(201).json({message: 'Domain deleted'});
   } catch (error:any) {
-    console.log("Domain creation error",error?.message);
+    console.log("Domain deletion error",error?.message);
     res.status(400);
   }
 }

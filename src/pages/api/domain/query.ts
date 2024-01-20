@@ -12,13 +12,15 @@ export default async function handler(req: NextApiRequest , res:NextApiResponse)
       //incase of request from localhost
       body = JSON.parse(req.body as unknown as string);
     }
-    const {name} = body;
+    const query = body.query;
+    console.log(body);
     await connectMongoDB();
-    await Domain.create({name});
-    
-    return res.status(201).json({message: 'Domain created'});
+    // const queryregexp = `/${query}/`;
+    const docs = await Domain.find({name: { $regex: query}})
+    console.log(docs);
+    return res.status(201).json(docs);
   } catch (error:any) {
-    console.log("Domain creation error",error?.message);
+    console.log("Domain query error",error?.message);
     res.status(400);
   }
 }

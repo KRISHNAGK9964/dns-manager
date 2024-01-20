@@ -9,11 +9,13 @@ interface headerProps {}
 
 const Header: React.FC<headerProps> = ({}) => {
   const router = useRouter();
-  let activeTab = "Overview";
+  let activeTab = "";
   if (router.pathname === "/settings") {
     activeTab = "Settings";
-  } else if (router.pathname === "/domains") {
+  } else if (router.pathname.includes('/domain')) {
     activeTab = "Domains";
+  }else if (router.pathname === "/") {
+    activeTab = "Overview";
   }
 
   const [profilePic, setProfilePic] = useState("");
