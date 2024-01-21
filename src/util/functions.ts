@@ -5,3 +5,11 @@ export const getAge = (createdAt:any) =>{
     console.log(createdAt);
     
 }
+
+export type domainType = {
+    _id: string;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };

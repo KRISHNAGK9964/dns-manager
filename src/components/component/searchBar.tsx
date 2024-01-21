@@ -1,23 +1,36 @@
-import React, { Dispatch, SVGProps, SetStateAction } from "react";
+import { domainType } from "@/util/functions";
+import React, { Dispatch, SVGProps, SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 
+// ----------------------------------------------------------------------------------------------------------- //
+
 interface searchBarProps {
-    setDomains: Dispatch<SetStateAction<{ _id: string; name: string; createdAt: string; }[]>>
+    setDomains: React.Dispatch<React.SetStateAction<domainType[] | undefined>>
 }
+
 type serchBarFormData = {
   query: string;
 };
+
+// ----------------------------------------------------------------------------------------------------------- //
+
 const SearchBar: React.FC<searchBarProps> = ({setDomains}) => {
+  // ---------------------------------------------------------------------------------------------------------- //
+  // search domains by name using regular expression in the backend
   const {
     register,
     setValue,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<serchBarFormData>();
 
+  const [loading, setLoading] = useState(false);
+  
   const onSubmit = handleSubmit(async (formData) => {
     console.log(formData);
     try {
+      setLoading(true);
       const res = await fetch("http://localhost:3000/api/domain/query", {
         method: "POST",
         headers: {
@@ -30,9 +43,14 @@ const SearchBar: React.FC<searchBarProps> = ({setDomains}) => {
         const text = await res.json();
         console.log(text);
         setDomains(text);
+        reset();
       }
-    } catch (error) {}
+    } catch (error:any) {
+      alert(error.message)
+    }
+    setLoading(false);
   });
+
   return (
     <form
       onSubmit={onSubmit}
@@ -56,6 +74,7 @@ const SearchBar: React.FC<searchBarProps> = ({setDomains}) => {
       </div>
       <button
         type="submit"
+        disabled={loading}
         className="p-2.5 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
         <SearchIcon className="w-4 h-4" />
@@ -86,6 +105,7 @@ function BranchIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
 function SearchIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
