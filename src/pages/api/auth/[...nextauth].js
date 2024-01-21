@@ -16,40 +16,40 @@ export const authOptions = {
       clientId: process.env.GoogleClientId,
       clientSecret: process.env.GoogleClientSecret,
     }),
-    CredentialsProvider({
-      id: "dns_manager",
-      name: "dns_manager",
-      credentials: {
-        Credential: { type: "text" },
-      },
-      authorize: async (credentials) => {
-        const token = credentials.Credential;
-        const ticket = await googleAuthClient.verifyIdToken({
-          idToken: token,
-          audience: process.env.CLIENT_GOOGLE_ID,
-        });
-        const payload = ticket.getPayload();
-        if (!payload) {
-          throw new Error("Cannot extract payload from signin token");
-        }
-        const {
-          email,
-          name,
-          sub,
-          given_name,
-          family_name,
-          email_verified,
-          picture: image,
-        } = payload;
-        if (!email) {
-          throw new Error("Email not available");
-        }
+    // CredentialsProvider({
+    //   id: "dns_manager",
+    //   name: "dns_manager",
+    //   credentials: {
+    //     Credential: { type: "text" },
+    //   },
+    //   authorize: async (credentials) => {
+    //     const token = credentials.Credential;
+    //     const ticket = await googleAuthClient.verifyIdToken({
+    //       idToken: token,
+    //       audience: process.env.CLIENT_GOOGLE_ID,
+    //     });
+    //     const payload = ticket.getPayload();
+    //     if (!payload) {
+    //       throw new Error("Cannot extract payload from signin token");
+    //     }
+    //     const {
+    //       email,
+    //       name,
+    //       sub,
+    //       given_name,
+    //       family_name,
+    //       email_verified,
+    //       picture: image,
+    //     } = payload;
+    //     if (!email) {
+    //       throw new Error("Email not available");
+    //     }
 
-        const user = { email, name, image };
-        console.log("user----", user);
-        return user;
-      },
-    }),
+    //     const user = { email, name, image };
+    //     console.log("user----", user);
+    //     return user;
+    //   },
+    // }),
   ],
   session: {
     strategy: "jwt", // must for credentialProvider
