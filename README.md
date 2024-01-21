@@ -10,7 +10,7 @@
   <p align="center">
     An awesome Real Time Domain and DNS record Manager 🙋‍♂️👋⚡🔥💬🗨️Ⓜ️
     <br />
-    <a href="https://github.com/KRISHNAGK9964/dns-manager/src/api/"><strong>API Endpoint»</strong></a>
+    <a href="https://github.com/KRISHNAGK9964/dns-manager/tree/main/src/pages/api"><strong>API Endpoint»</strong></a>
     <p> [ backend is NextApi Endpoints hosted as Nextjs Serverless Functions ] </p>
     <br />
     <br />
@@ -157,7 +157,7 @@ Krishna -  [email](email)
 Project Links: 
 | frontend | backend |
 | -------- | ------- |
-|[https://github.com/KRISHNAGK9964/dns-manager](imessage) | [https://github.com/KRISHNAGK9964/dns-manager/src/api](NextApi Endpoint)|
+|[https://github.com/KRISHNAGK9964/dns-manager](imessage) | [https://github.com/KRISHNAGK9964/dns-manager/tree/main/src/pages/api](NextApi Endpoint)|
 
 <p align="right">(<a href="#readme">back to top</a>)</p>
 
