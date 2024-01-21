@@ -87,7 +87,7 @@ const DnsTable = ({
   const onSubmit = handleSubmit(async (formData) => {
     console.log(formData);
     try {
-      const res = await fetch(`api/DNSRecord/query`, {
+      const res = await fetch(`https://dns-manager-seven.vercel.app/api/DNSRecord/query`, {
         method: "POST",
         headers: {
           ContentType: "application/json",

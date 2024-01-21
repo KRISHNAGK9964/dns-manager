@@ -76,7 +76,7 @@ const Domain: React.FC<domainProps> = () => {
     if (domain) {
       try {
         setLoading(true);
-        const res = await fetch(`/api/DNSRecord/create`, {
+        const res = await fetch(`https://dns-manager-seven.vercel.app/api/DNSRecord/create`, {
           method: "POST",
           headers: {
             Content_Type: "application/json",
@@ -126,7 +126,7 @@ const Domain: React.FC<domainProps> = () => {
     setLoading(true);
     try {
       console.log(selectedDomain);
-      const res = await fetch(`api/domain/delete`, {
+      const res = await fetch(`https://dns-manager-seven.vercel.app/api/domain/delete`, {
         method: "POST",
         headers: {
           ContentType: "application/json",
@@ -187,7 +187,7 @@ const Domain: React.FC<domainProps> = () => {
         const parsedData = JSON.parse(fileContents);
         console.log(fileContents, parsedData);
 
-        const response = await fetch(`api/DNSRecord/bulk-upload`, {
+        const response = await fetch(`https://dns-manager-seven.vercel.app/api/DNSRecord/bulk-upload`, {
           method: "POST",
           headers: {
             ContentType: "application/json",
