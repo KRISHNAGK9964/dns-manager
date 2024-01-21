@@ -5,9 +5,16 @@ import React, { SVGProps, useEffect, useState } from "react";
 import { DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 
+// ---------------------------------------------------------------------------------------------------------------- //
+
 interface headerProps {}
 
+// ---------------------------------------------------------------------------------------------------------------- //
+
 const Header: React.FC<headerProps> = ({}) => {
+
+// -------------------------------------------------------------------------------------------------------------- //
+  // check the rote for setting the tab
   const router = useRouter();
   let activeTab = "";
   if (router.pathname === "/settings") {
@@ -17,20 +24,23 @@ const Header: React.FC<headerProps> = ({}) => {
   }else if (router.pathname === "/") {
     activeTab = "Overview";
   }
-
+// ---------------------------------------------------------------------------------------------------------------- //
+  // when session object is changed update the user profile image
   const [profilePic, setProfilePic] = useState("");
   const { data: session, status } = useSession();
   useEffect(()=>{
     if(session?.user?.image) setProfilePic(session.user.image);
   },[session]);
 
-  
+// ----------------------------------------------------------------------------------------------------------------- //
   return (
     <header className="px-4 lg:px-6  flex items-center border-b bg-gray-50">
+      {/* icon */}
       <Link className="flex items-center justify-center mr-8" href="#">
         <CloudIcon className="h-6 w-6" />
         <span className="sr-only">Vercel</span>
       </Link>
+      {/* tabs */}
       <div className="border-gray-200 dark:border-gray-700">
         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
           <li className="me-2">
@@ -93,7 +103,7 @@ const Header: React.FC<headerProps> = ({}) => {
           </li>
         </ul>
       </div>
-
+      {/* right end */}
       <nav className="ml-auto flex gap-4 sm:gap-6">
         <Link
           className="hidden md:block text-sm my-auto font-medium hover:underline underline-offset-8"
@@ -101,6 +111,7 @@ const Header: React.FC<headerProps> = ({}) => {
         >
           Docs
         </Link>
+        {/* signin or userprofileAvatar */}
         { session ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

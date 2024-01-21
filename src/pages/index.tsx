@@ -1,15 +1,16 @@
-import Link from "next/link";
-// import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card"
-import Image from "next/image";
 import { Inter } from "next/font/google";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { JSX, SVGProps, useEffect } from "react";
-import { Router, useRouter } from "next/router";
+import {  useEffect } from "react";
+import { useRouter } from "next/router";
 import Header from "@/components/component/header";
-const inter = Inter({ subsets: ["latin"] });
-import { Homepage } from "@/components/component/homepage";
+import  Homepage  from "@/components/component/homepage";
 import Footer from "@/components/component/footer";
+
+// --------------------------------------------------------------------------------------------------- //
+
 interface homeProps {}
+
+// --------------------------------------------------------------------------------------------------- //
 
 const Home: React.FC<homeProps> = ({}) => {
   const router = useRouter();
