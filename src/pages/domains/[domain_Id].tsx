@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ChangeEvent, SVGProps, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import TimeAgo from "react-timeago";
 
 // --------------------------------------------------------------------------------------------------------------------- //
@@ -36,25 +37,31 @@ const Domain: React.FC<domainProps> = () => {
       const domainId = router.query.domain_Id;
       console.log("domainId: ", domainId);
       if (domainId) {
+        const notification = toast.loading("fetching the Domain");
         setLoading(true);
         try {
-          const res = await fetch(`https://dns-manager-seven.vercel.app/api/domain/findById`, {
-            method: "POST",
-            headers: {
-              ContentType: "application/json",
-            },
-            body: JSON.stringify({ _id: domainId }),
-          });
+          const res = await fetch(
+            `https://dns-manager-seven.vercel.app/api/domain/findById`,
+            {
+              method: "POST",
+              headers: {
+                ContentType: "application/json",
+              },
+              body: JSON.stringify({ _id: domainId }),
+            }
+          );
           if (res.ok) {
             console.log("Domain fetched");
             const domain = await res.json();
             console.log(domain);
             setDomain(domain);
+            toast.success("domain fetched successfully",{id:notification});
             setLoading(false);
           }
         } catch (error: any) {
           seterror(error.message);
           alert(error.message);
+          toast.error("error occured while retrieving domain",{id:notification});
           console.log(error);
         }
       }
@@ -63,7 +70,7 @@ const Domain: React.FC<domainProps> = () => {
   }, [router]);
 
   // --------------------------------------------------------------------------------------------------- //
-  // create a new DNS Record 
+  // create a new DNS Record
   const {
     register,
     setValue,
@@ -74,45 +81,51 @@ const Domain: React.FC<domainProps> = () => {
   const handleAddRecord = handleSubmit(async (formData) => {
     console.log(formData);
     if (domain) {
+      const notification = toast.loading("creating DNS record");
       try {
         setLoading(true);
-        const res = await fetch(`https://dns-manager-seven.vercel.app/api/DNSRecord/create`, {
-          method: "POST",
-          headers: {
-            Content_Type: "application/json",
-          },
-          body: JSON.stringify({
-            domainId: domain._id,
-            name: formData.name,
-            type: formData.type,
-            value: formData.value,
-            timeLimit: formData.timeLimit,
-            priority: formData.priority,
-            comment: formData.comment,
-          }),
-        });
+        const res = await fetch(
+          `https://dns-manager-seven.vercel.app/api/DNSRecord/create`,
+          {
+            method: "POST",
+            headers: {
+              Content_Type: "application/json",
+            },
+            body: JSON.stringify({
+              domainId: domain._id,
+              name: formData.name,
+              type: formData.type,
+              value: formData.value,
+              timeLimit: formData.timeLimit,
+              priority: formData.priority,
+              comment: formData.comment,
+            }),
+          }
+        );
 
         if (res.ok) {
           console.log("DNS record created");
+          toast.success("DNS record Added",{id:notification});
           const text = await res.text();
           console.log(text);
           reset();
         }
-      } catch (error:any) {
-        alert(error.message)
+      } catch (error: any) {
+        alert(error.message);
+        toast.error("could not create DNS record",{id:notification});
         console.log(error);
       }
       setLoading(false);
     }
   });
 
-// ------------------------------------------------------------------------------------------------------------- //
-// Edit DNS record using Modal and Save to database
+  // ------------------------------------------------------------------------------------------------------------- //
+  // Edit DNS record using Modal and Save to database
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState({});
 
   // ----------------------------------------------------------------------------------------------------------- //
-  // delete the domain which consequently delete all associated DNS Records of it 
+  // delete the domain which consequently delete all associated DNS Records of it
   const [selectedDomain, setSelectedDomain] = useState<domainType>();
   const [deleteModalOpen, setdeleteModalOpen] = useState(false);
   const handleDeleteDomain = (domain: any) => {
@@ -123,30 +136,36 @@ const Domain: React.FC<domainProps> = () => {
     setdeleteModalOpen(!deleteModalOpen);
   };
   const handleConfirmDelete = async () => {
+    const notification = toast.loading("Deleting the domain");
     setLoading(true);
     try {
       console.log(selectedDomain);
-      const res = await fetch(`https://dns-manager-seven.vercel.app/api/domain/delete`, {
-        method: "POST",
-        headers: {
-          ContentType: "application/json",
-        },
-        body: JSON.stringify(selectedDomain),
-      });
+      const res = await fetch(
+        `https://dns-manager-seven.vercel.app/api/domain/delete`,
+        {
+          method: "POST",
+          headers: {
+            ContentType: "application/json",
+          },
+          body: JSON.stringify(selectedDomain),
+        }
+      );
       if (res.ok) {
         console.log("Domain deleted");
+        toast.success("Domain deletd successfully", { id: notification });
         const text = await res.text();
         console.log(text);
         router.replace("/domains");
       }
     } catch (error) {
       console.log(error);
+      toast.error("could not delete the domain", { id: notification });
     }
     setLoading(false);
   };
 
-// ---------------------------------------------------------------------------------------------------------- //
-// upload DNS records via JSON File
+  // ---------------------------------------------------------------------------------------------------------- //
+  // upload DNS records via JSON File
   const readFile = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -173,13 +192,14 @@ const Domain: React.FC<domainProps> = () => {
         alert("Please upload a valid JSON file.");
         return;
       }
-      
+
       const confirmUpload = window.confirm(
         `upload ${e.target.files[0].name} \n Are you sure JSON file is formatted correctly?`
       );
       if (!confirmUpload) {
         return;
       }
+      const notification = toast.loading("uploading records");
       try {
         setLoading(true);
         console.log(file);
@@ -187,25 +207,33 @@ const Domain: React.FC<domainProps> = () => {
         const parsedData = JSON.parse(fileContents);
         console.log(fileContents, parsedData);
 
-        const response = await fetch(`https://dns-manager-seven.vercel.app/api/DNSRecord/bulk-upload`, {
-          method: "POST",
-          headers: {
-            ContentType: "application/json",
-          },
-          body: JSON.stringify({ domainId: domain._id, data: parsedData }),
-        });
+        const response = await fetch(
+          `https://dns-manager-seven.vercel.app/api/DNSRecord/bulk-upload`,
+          {
+            method: "POST",
+            headers: {
+              ContentType: "application/json",
+            },
+            body: JSON.stringify({ domainId: domain._id, data: parsedData }),
+          }
+        );
 
-        const data = await response.json();
-        console.log(data);
-      } catch (error:any) {
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          toast.success("DNS records Added successfully ", {
+            id: notification,
+          });
+        }
+      } catch (error: any) {
         console.error("Error uploading DNS records:", error.message);
-        alert("An error occurred while uploading DNS records.");
+        toast.error("An error occurred while uploading DNS records.",{id:notification});
       }
       setLoading(false);
     }
   };
 
-// ---------------------------------------------------------------------------------------------------------------------- //
+  // ---------------------------------------------------------------------------------------------------------------------- //
 
   return (
     <>
@@ -466,7 +494,7 @@ const Domain: React.FC<domainProps> = () => {
           />
         </div>
       </section>
-      
+
       {/* <!-- Edit DNS Record modal --> */}
       <div
         id="authentication-modal"
@@ -503,7 +531,7 @@ const Domain: React.FC<domainProps> = () => {
               className="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
               data-modal-hide="popup-modal"
             >
-              <CrossIcon className="w-3 h-3"/>
+              <CrossIcon className="w-3 h-3" />
               <span className="sr-only">Close modal</span>
             </button>
             <div className="p-4 md:p-5 text-center">

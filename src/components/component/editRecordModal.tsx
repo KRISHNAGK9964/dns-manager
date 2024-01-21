@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React, { SVGProps, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 // -------------------------------------------------------------------------------------------------------------- //
 
@@ -29,6 +30,7 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading}: any) 
     console.log(formData);
     try {
       setLoading(true);
+      const notification = toast.loading("saving changes to the database");
       const res = await fetch(`https://dns-manager-seven.vercel.app/api/DNSRecord/edit`, {
         method: "POST",
         headers: {
@@ -50,9 +52,11 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading}: any) 
         const text = await res.text();
         console.log(text);
         reset();
+        toast.success("changes saved successfully",{id:notification});
         setEditModalOpen(false);
       }
-    } catch (error) {
+    } catch (error:any) {
+      toast.error("error occured while saving changes");
       console.log(error);
     }
     setLoading(false);
@@ -61,6 +65,7 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading}: any) 
   // ----------------------------------------------------------------------------------------------------------------------- //
   // delete DNS Record 
   const handleRemoveRecord = async() => {
+    const notification = toast.loading("removing the record");
     try {
         setLoading(true);
         const res = await fetch(`https://dns-manager-seven.vercel.app/api/DNSRecord/delete`, {
@@ -78,10 +83,12 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading}: any) 
           const text = await res.text();
           console.log(text);
           reset();
+          toast.success("record removed successffully",{id:notification});
           setEditModalOpen(false);
         }
       } catch (error) {
         console.log(error);
+        toast.error("error occured while deleting the record",{id:notification})
       }
       setLoading(false);
   }

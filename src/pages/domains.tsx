@@ -3,6 +3,7 @@ import SearchBar from "@/components/component/searchBar";
 import { useRouter } from "next/router";
 import React, { SVGProps, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import TimeAgo from "react-timeago";
 
 // ------------------------------------------------------------------------------------------------ //
@@ -32,15 +33,18 @@ const domains: React.FC<domainsProps> = () => {
   useEffect(() => {
     const fetchDomains = async () => {
       console.log("fetchDomains");
+      const notification = toast.loading("fetching Domains");
       try {
         const res = await fetch(`https://dns-manager-seven.vercel.app/api/domain/getAll`);
         if (res.ok) {
           const data = await res.json();
           console.log("data", data);
           setDomains(data);
+          toast.success("domains fetched",{id: notification});
         }
       } catch (error) {
         console.log(error);
+        toast.error("could not fetch domains",{id:notification});
       }
     };
 
@@ -65,6 +69,7 @@ const domains: React.FC<domainsProps> = () => {
   //onsubmission of form modal
   const onSubmit = handleSubmit(async (formData) => {
     console.log(formData);
+    const notification = toast.loading("Creating new Domain");
     try {
       setLoading(true);
       const res = await fetch(`https://dns-manager-seven.vercel.app/api/domain/create`, {
@@ -79,6 +84,7 @@ const domains: React.FC<domainsProps> = () => {
 
       if (res.ok) {
         console.log("Domain created");
+        toast.success("Domain Added",{id:notification});
         const text = await res.text();
         console.log(text);
         reset();
@@ -86,6 +92,7 @@ const domains: React.FC<domainsProps> = () => {
       }
     } catch (error: any) {
       alert(error.message);
+      toast.error(error.message,{id:notification})
     }
     setLoading(false);
   });
@@ -103,6 +110,7 @@ const domains: React.FC<domainsProps> = () => {
   };
   const handleConfirmDelete = async () => {
     if (selectedDomain) {
+      const notification = toast.loading("deleting the Domain");
       setLoading(true);
       try {
         console.log(selectedDomain);
@@ -115,6 +123,7 @@ const domains: React.FC<domainsProps> = () => {
         });
         if (res.ok) {
           console.log("Domain deleted");
+          toast.success("Domain deleted successfully",{id:notification});
           const text = await res.text();
           console.log(text);
           setSelectedDomain("");
@@ -122,6 +131,7 @@ const domains: React.FC<domainsProps> = () => {
         }
       } catch (error) {
         console.log(error);
+        toast.error("could not Delete the domain",{id:notification});
       }
       setLoading(false);
     }

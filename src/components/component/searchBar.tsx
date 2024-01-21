@@ -1,6 +1,7 @@
 import { domainType } from "@/util/functions";
 import React, { Dispatch, SVGProps, SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
 
 // ----------------------------------------------------------------------------------------------------------- //
 
@@ -29,6 +30,7 @@ const SearchBar: React.FC<searchBarProps> = ({setDomains}) => {
   
   const onSubmit = handleSubmit(async (formData) => {
     console.log(formData);
+    const notification = toast.loading("searching domains");
     try {
       setLoading(true);
       const res = await fetch(`https://dns-manager-seven.vercel.app/api/domain/query`, {
@@ -43,10 +45,12 @@ const SearchBar: React.FC<searchBarProps> = ({setDomains}) => {
         const text = await res.json();
         console.log(text);
         setDomains(text);
+        toast.success("domains fetched successfully",{id:notification});
         reset();
       }
     } catch (error:any) {
       alert(error.message)
+      toast.error("error while fetching domains",{id:notification});
     }
     setLoading(false);
   });

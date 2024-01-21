@@ -1,5 +1,6 @@
 import React, { SVGProps, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import TimeAgo from "react-timeago";
 
 // ------------------------------------------------------------------------------------------------- //
@@ -38,6 +39,7 @@ const DnsTable = ({
   useEffect(() => {
     const fetchRecords = async () => {
       if (domain) {
+        const notification = toast.loading("fetching DNS records");
         try {
           console.log("domain", domain);
           const res = await fetch(
@@ -54,9 +56,11 @@ const DnsTable = ({
             const data = await res.json();
             console.log("data", data);
             setRecords([...data]);
+            toast.success("DNS records retrieved successfully",{id:notification});
           }
         } catch (error) {
           console.log(error);
+          toast.error("error occured while fetching DNS records");
         }
       }
     };
@@ -86,6 +90,7 @@ const DnsTable = ({
 
   const onSubmit = handleSubmit(async (formData) => {
     console.log(formData);
+    const notification = toast.loading("searching records");
     try {
       const res = await fetch(`https://dns-manager-seven.vercel.app/api/DNSRecord/query`, {
         method: "POST",
@@ -99,8 +104,12 @@ const DnsTable = ({
         const text = await res.json();
         console.log(text);
         setRecords(text);
+        toast.success("records fetched",{id:notification});
       }
-    } catch (error) {}
+    } catch (error:any) {
+      console.log(error);
+      toast.error("error occured while searching",{id:notification});
+    }
   });
   // -------------------------------------------------------------------------------------------------------------------------------- //
   // export DNS Records as JSON File

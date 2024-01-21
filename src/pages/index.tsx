@@ -1,9 +1,9 @@
 import { Inter } from "next/font/google";
 import { useSession, signIn, signOut } from "next-auth/react";
-import {  useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
 import Header from "@/components/component/header";
-import  Homepage  from "@/components/component/homepage";
+import Homepage from "@/components/component/homepage";
 import Footer from "@/components/component/footer";
 
 // --------------------------------------------------------------------------------------------------- //
@@ -24,7 +24,9 @@ const Home: React.FC<homeProps> = ({}) => {
     }
   }, [session]);
 
-  return (
+  return status == "loading" ? (
+    <></>
+  ) : (
     <div className="flex flex-col min-h-screen ">
       <Header />
       <section className="flex-1">
