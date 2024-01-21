@@ -157,7 +157,7 @@ Krishna -  [email](email)
 Project Links: 
 | frontend | backend |
 | -------- | ------- |
-|[https://github.com/KRISHNAGK9964/dns-manager](imessage) | [https://github.com/KRISHNAGK9964/dns-manager/tree/main/src/pages/api](NextApi Endpoint)|
+|[https://github.com/KRISHNAGK9964/dns-manager](dns-manager) | [https://github.com/KRISHNAGK9964/dns-manager/tree/main/src/pages/api](NextApi-Endpoint) |
 
 <p align="right">(<a href="#readme">back to top</a>)</p>
 
@@ -195,6 +195,7 @@ Project Links:
 
 
 [dns-manager]: https://dns-manager-seven.vercel.app
+[NextApi-Endpoint]: https://github.com/KRISHNAGK9964/dns-manager/tree/main/src/pages/api
 [email]: Kkrishna22572@gmail.com
 [Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
 [Bootstrap-url]: https://getbootstrap.com
