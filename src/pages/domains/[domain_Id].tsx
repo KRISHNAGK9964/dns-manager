@@ -38,7 +38,7 @@ const Domain: React.FC<domainProps> = () => {
       if (domainId) {
         setLoading(true);
         try {
-          const res = await fetch(`api/domain/findById`, {
+          const res = await fetch(`https://dns-manager-seven.vercel.app/api/domain/findById`, {
             method: "POST",
             headers: {
               ContentType: "application/json",
