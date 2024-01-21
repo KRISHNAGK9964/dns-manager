@@ -1,6 +1,8 @@
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { SVGProps, useEffect } from "react";
 import { useForm } from "react-hook-form";
+
+// -------------------------------------------------------------------------------------------------------------- //
 
 type dnsRecordFormData = {
   name: string;
@@ -11,7 +13,11 @@ type dnsRecordFormData = {
   comment: string;
 };
 
-const EditRecordModal = ({ record, setEditModalOpen, setLoading }: any) => {
+//----------------------------------------------------------------------------------------------------------------------- //
+
+const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading}: any) => {
+  // --------------------------------------------------------------------------------------------------------------------------------//
+  // Edit Record and save to database
   const {
     register,
     setValue,
@@ -51,7 +57,9 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading }: any) => {
     }
     setLoading(false);
   });
-//   useEffect(() => {}, [record]);
+
+  // ----------------------------------------------------------------------------------------------------------------------- //
+  // delete DNS Record 
   const handleRemoveRecord = async() => {
     try {
         setLoading(true);
@@ -77,6 +85,7 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading }: any) => {
       }
       setLoading(false);
   }
+  // ---------------------------------------------------------------------------------------------------------------- //
   return (
     <div className="max-w-screen-xl p-8 mx-auto">
       <form
@@ -91,25 +100,12 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading }: any) => {
             onClick={() => {
               setEditModalOpen(false);
             }}
+            disabled={loading}
             type="button"
             className="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
             data-modal-hide="authentication-modal"
           >
-            <svg
-              className="w-3 h-3"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 14 14"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-              />
-            </svg>
+            <CrossIcon className="w-3 h-3"/>
             <span className="sr-only">Close modal</span>
           </button>
         </div>
@@ -145,7 +141,7 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading }: any) => {
                   {...register("type", { required: true })}
                   className="block w-full p-2 mb-6 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 >
-                  <option selected>A</option>
+                  <option value="A">A</option>
                   <option value="AAAA">AAAA</option>
                   <option value="CNAME">CNAME</option>
                   <option value="MX">MX</option>
@@ -236,6 +232,7 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading }: any) => {
           <button
             type="button"
             onClick={handleRemoveRecord}
+            disabled={loading}
             className="text-gray-900 hover:text-red-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
           >
             Remove
@@ -243,6 +240,7 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading }: any) => {
 
           <button
             type="submit"
+            disabled={loading}
             className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
           >
             Save
@@ -254,3 +252,42 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading }: any) => {
 };
 
 export default EditRecordModal;
+
+function CrossIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 14 14"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+      />
+    </svg>
+  );
+}
+function AlertIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 20 20"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+      />
+    </svg>
+  );
+}

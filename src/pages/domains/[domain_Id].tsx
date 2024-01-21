@@ -1,14 +1,17 @@
 import DnsTable from "@/components/component/dnsTable";
 import EditRecordModal from "@/components/component/editRecordModal";
 import Header from "@/components/component/header";
+import { domainType } from "@/util/functions";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, SVGProps, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import TimeAgo from "react-timeago";
-import fs from "fs";
 
+// --------------------------------------------------------------------------------------------------------------------- //
+
+interface domainProps {}
 type dnsRecordFormData = {
   name: string;
   type: string;
@@ -17,16 +20,15 @@ type dnsRecordFormData = {
   priority: number;
   comment: string;
 };
-const Domain = () => {
-  const { data: session, status } = useSession();
 
+// --------------------------------------------------------------------------------------------------------------------- //
+
+const Domain: React.FC<domainProps> = () => {
+  // --------------------------------------------------------------------------------------------------------------------------//
+  // Fetch the domain whenever router object changed(i.e url) and store as a state
+  const { data: session, status } = useSession();
   const router = useRouter();
-  const [domain, setDomain] = useState({
-    _id: "1",
-    name: "example.com",
-    createdAt: "2022-01-17",
-    updatedAt: "2024-01-19T12:02:09.719Z",
-  });
+  const [domain, setDomain] = useState<domainType>();
   const [loading, setLoading] = useState(false);
   const [error, seterror] = useState("");
   useEffect(() => {
@@ -52,6 +54,7 @@ const Domain = () => {
           }
         } catch (error: any) {
           seterror(error.message);
+          alert(error.message);
           console.log(error);
         }
       }
@@ -59,6 +62,8 @@ const Domain = () => {
     fetchDomain();
   }, [router]);
 
+  // --------------------------------------------------------------------------------------------------- //
+  // create a new DNS Record 
   const {
     register,
     setValue,
@@ -68,40 +73,47 @@ const Domain = () => {
   } = useForm<dnsRecordFormData>();
   const handleAddRecord = handleSubmit(async (formData) => {
     console.log(formData);
-    try {
-      setLoading(true);
-      const res = await fetch("http://localhost:3000/api/DNSRecord/create", {
-        method: "POST",
-        headers: {
-          Content_Type: "application/json",
-        },
-        body: JSON.stringify({
-          domainId: domain._id,
-          name: formData.name,
-          type: formData.type,
-          value: formData.value,
-          timeLimit: formData.timeLimit,
-          priority: formData.priority,
-          comment: formData.comment,
-        }),
-      });
+    if (domain) {
+      try {
+        setLoading(true);
+        const res = await fetch("http://localhost:3000/api/DNSRecord/create", {
+          method: "POST",
+          headers: {
+            Content_Type: "application/json",
+          },
+          body: JSON.stringify({
+            domainId: domain._id,
+            name: formData.name,
+            type: formData.type,
+            value: formData.value,
+            timeLimit: formData.timeLimit,
+            priority: formData.priority,
+            comment: formData.comment,
+          }),
+        });
 
-      if (res.ok) {
-        console.log("DNS record created");
-        const text = await res.text();
-        console.log(text);
-        reset();
+        if (res.ok) {
+          console.log("DNS record created");
+          const text = await res.text();
+          console.log(text);
+          reset();
+        }
+      } catch (error:any) {
+        alert(error.message)
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
+      setLoading(false);
     }
-    setLoading(false);
   });
 
+// ------------------------------------------------------------------------------------------------------------- //
+// Edit DNS record using Modal and Save to database
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState({});
 
-  const [selectedDomain, setSelectedDomain] = useState({});
+  // ----------------------------------------------------------------------------------------------------------- //
+  // delete the domain which consequently delete all associated DNS Records of it 
+  const [selectedDomain, setSelectedDomain] = useState<domainType>();
   const [deleteModalOpen, setdeleteModalOpen] = useState(false);
   const handleDeleteDomain = (domain: any) => {
     toggleDeleteModal();
@@ -110,7 +122,7 @@ const Domain = () => {
   const toggleDeleteModal = () => {
     setdeleteModalOpen(!deleteModalOpen);
   };
-  const handleConfirmDelete = async (domain: any) => {
+  const handleConfirmDelete = async () => {
     setLoading(true);
     try {
       console.log(selectedDomain);
@@ -119,14 +131,12 @@ const Domain = () => {
         headers: {
           ContentType: "application/json",
         },
-        body: JSON.stringify(domain),
+        body: JSON.stringify(selectedDomain),
       });
       if (res.ok) {
         console.log("Domain deleted");
         const text = await res.text();
         console.log(text);
-        // setSelectedDomain("");
-        // toggleDeleteModal();
         router.replace("/domains");
       }
     } catch (error) {
@@ -135,8 +145,8 @@ const Domain = () => {
     setLoading(false);
   };
 
-  const [File, setFile] = useState<File | null>(null);
-
+// ---------------------------------------------------------------------------------------------------------- //
+// upload DNS records via JSON File
   const readFile = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -155,7 +165,7 @@ const Domain = () => {
     });
   };
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
+    if (domain && e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       const isJsonFile = file.name.endsWith(".json");
 
@@ -163,7 +173,7 @@ const Domain = () => {
         alert("Please upload a valid JSON file.");
         return;
       }
-      setFile(e.target.files[0]);
+      
       const confirmUpload = window.confirm(
         `upload ${e.target.files[0].name} \n Are you sure JSON file is formatted correctly?`
       );
@@ -187,72 +197,78 @@ const Domain = () => {
 
         const data = await response.json();
         console.log(data);
-        setFile(null);
-      } catch (error) {
-        console.error("Error uploading DNS records:", error);
+      } catch (error:any) {
+        console.error("Error uploading DNS records:", error.message);
         alert("An error occurred while uploading DNS records.");
       }
       setLoading(false);
     }
   };
 
+// ---------------------------------------------------------------------------------------------------------------------- //
+
   return (
     <>
       <Header />
-      <section className="border-b">
-        <div className=" flex items-center justify-between p-8 max-w-screen-xl m-auto">
-          <div className="flex-1 ">
-            <h1 className="text-3xl font-semibold">{domain.name}</h1>
-          </div>
-          <div>
-            <button
-              type="button"
-              onClick={() => {
-                handleDeleteDomain(domain);
-              }}
-              className="cursor-pointer hover:shadow-sm hover:bg-gray-50 p-2  border  rounded-md  font-medium text-red-500 dark:text-blue-500 "
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-        <div className="flex flex-wrap p-8 justify-between max-w-screen-xl mx-auto">
-          <div className=" w-1/3 mb-4">
-            <p className="pt-2">Registrar</p>
-            <p className="pt-2 font-medium">Third Party</p>
-          </div>
-          <div className=" w-1/3 mb-4">
-            <p className="pt-2">Nameservers</p>
-            <p className="pt-2 font-medium">Third Party</p>
-          </div>
-          <div className=" w-1/3 mb-4">
-            <p className="pt-2">Expiration Date</p>
-            <p className="pt-2 font-medium">-</p>
-          </div>
-          <div className=" w-1/3 mb-2">
-            <p className="pt-2">Creator</p>
-            <p className="pt-2 font-medium">{session?.user?.name}</p>
-          </div>
-          <div className=" w-1/3 mb-4">
-            <p className="pt-2">Age</p>
-            <div className="pt-2 font-medium">
-              <TimeAgo date={domain.createdAt}></TimeAgo>
+      {/* Domain Specs */}
+      {domain && (
+        <section className="border-b">
+          <div className=" flex items-center justify-between p-8 max-w-screen-xl m-auto">
+            <div className="flex-1 ">
+              <h1 className="text-3xl font-semibold">{domain.name}</h1>
+            </div>
+            <div>
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => {
+                  handleDeleteDomain(domain);
+                }}
+                className="cursor-pointer hover:shadow-sm hover:bg-gray-50 p-2  border  rounded-md  font-medium text-red-500 dark:text-blue-500 "
+              >
+                Delete
+              </button>
             </div>
           </div>
-          <div className=" w-1/3 mb-4">
-            <p className="pt-2">Edge Network</p>
-            <p className="pt-2 font-medium">✅ Active</p>
+          <div className="flex flex-wrap p-8 justify-between max-w-screen-xl mx-auto">
+            <div className=" w-1/3 mb-4">
+              <p className="pt-2">Registrar</p>
+              <p className="pt-2 font-medium">Third Party</p>
+            </div>
+            <div className=" w-1/3 mb-4">
+              <p className="pt-2">Nameservers</p>
+              <p className="pt-2 font-medium">Third Party</p>
+            </div>
+            <div className=" w-1/3 mb-4">
+              <p className="pt-2">Expiration Date</p>
+              <p className="pt-2 font-medium">-</p>
+            </div>
+            <div className=" w-1/3 mb-2">
+              <p className="pt-2">Creator</p>
+              <p className="pt-2 font-medium">{session?.user?.name}</p>
+            </div>
+            <div className=" w-1/3 mb-4">
+              <p className="pt-2">Age</p>
+              <div className="pt-2 font-medium">
+                <TimeAgo date={domain.createdAt}></TimeAgo>
+              </div>
+            </div>
+            <div className=" w-1/3 mb-4">
+              <p className="pt-2">Edge Network</p>
+              <p className="pt-2 font-medium">✅ Active</p>
+            </div>
           </div>
-        </div>
-        <div className="max-w-screen-xl mx-auto  px-8 p-4">
-          <Link
-            href={"/domains"}
-            className=" text-blue-500 hover:underline cursor-pointer"
-          >
-            ⬅️Back
-          </Link>
-        </div>
-      </section>
+          <div className="max-w-screen-xl mx-auto  px-8 p-4">
+            <Link
+              href={"/domains"}
+              className=" text-blue-500 hover:underline cursor-pointer"
+            >
+              ⬅️Back
+            </Link>
+          </div>
+        </section>
+      )}
+      {/* Add DNS Record Section */}
       <section className="">
         <div className="max-w-screen-xl p-8 py-6 mx-auto">
           <p className="text-3xl font-semibold">DNS Records</p>
@@ -276,6 +292,7 @@ const Domain = () => {
                 type="file"
                 id="uploadJSON"
                 className="hidden"
+                disabled={loading}
                 onChange={handleFileChange}
               />
               <label
@@ -320,11 +337,12 @@ const Domain = () => {
                         Type
                       </label>
                       <select
+                        defaultValue={"A"}
                         id="Type"
                         {...register("type", { required: true })}
                         className="block w-full p-2 mb-6 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       >
-                        <option selected>A</option>
+                        <option value="A">A</option>
                         <option value="AAAA">AAAA</option>
                         <option value="CNAME">CNAME</option>
                         <option value="MX">MX</option>
@@ -381,6 +399,7 @@ const Domain = () => {
                         <input
                           type="number"
                           id="Priority"
+                          defaultValue={0}
                           {...register("priority")}
                           aria-describedby="helper-text-explanation"
                           placeholder=""
@@ -433,6 +452,7 @@ const Domain = () => {
           </div>
         </div>
       </section>
+      {/* DNS Records Table */}
       <section className="">
         <div className="p-8 max-w-screen-xl mx-auto">
           <DnsTable
@@ -446,7 +466,8 @@ const Domain = () => {
           />
         </div>
       </section>
-      {/* <!-- Main modal --> */}
+      
+      {/* <!-- Edit DNS Record modal --> */}
       <div
         id="authentication-modal"
         tabIndex={-1}
@@ -461,9 +482,11 @@ const Domain = () => {
             record={selectedRecord}
             setEditModalOpen={setEditModalOpen}
             setLoading={setLoading}
+            loading={loading}
           />
         </div>
       </div>
+
       {/* delete conformation modal */}
       <div
         id="popup-modal"
@@ -480,47 +503,19 @@ const Domain = () => {
               className="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
               data-modal-hide="popup-modal"
             >
-              <svg
-                className="w-3 h-3"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 14 14"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                />
-              </svg>
+              <CrossIcon className="w-3 h-3"/>
               <span className="sr-only">Close modal</span>
             </button>
             <div className="p-4 md:p-5 text-center">
-              <svg
-                className="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
+              <AlertIcon className="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" />
               <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                Are you sure you want to delete {domain.name}
+                Are you sure you want to delete {selectedDomain?.name}
               </h3>
               <button
                 data-modal-hide="popup-modal"
                 type="button"
                 onClick={() => {
-                  handleConfirmDelete(domain);
+                  handleConfirmDelete();
                 }}
                 className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2"
               >
@@ -543,3 +538,42 @@ const Domain = () => {
 };
 
 export default Domain;
+
+function CrossIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 14 14"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+      />
+    </svg>
+  );
+}
+function AlertIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 20 20"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+      />
+    </svg>
+  );
+}
