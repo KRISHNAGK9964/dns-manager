@@ -29,7 +29,7 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading}: any) 
     console.log(formData);
     try {
       setLoading(true);
-      const res = await fetch(`${process.env.HOSTED_URL}api/DNSRecord/edit`, {
+      const res = await fetch(`api/DNSRecord/edit`, {
         method: "POST",
         headers: {
           Content_Type: "application/json",
@@ -63,7 +63,7 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading}: any) 
   const handleRemoveRecord = async() => {
     try {
         setLoading(true);
-        const res = await fetch(`${process.env.HOSTED_URL}api/DNSRecord/delete`, {
+        const res = await fetch(`api/DNSRecord/delete`, {
           method: "POST",
           headers: {
             Content_Type: "application/json",

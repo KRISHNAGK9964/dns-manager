@@ -62,7 +62,7 @@ export const authOptions = {
       if (account.provider === "google") {
         const { name, email } = user;
         try {
-          const res = await fetch(`${process.env.HOSTED_URL}api/user/create`, {
+          const res = await fetch(`api/user/create`, {
             method: "POST",
             headers: {
               Content_Type: "application/json",
