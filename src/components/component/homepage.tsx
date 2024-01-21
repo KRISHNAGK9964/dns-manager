@@ -122,7 +122,7 @@ const Homepage: React.FC<HomePageProps> = () => {
               </CardContent>
             </Card>
             {/* Pie Chart */}
-            <Card className="flex flex-col">
+            {/* <Card className="flex flex-col">
               <CardHeader>
                 <CardDescription>NS Records</CardDescription>
                 <CardTitle>131415</CardTitle>
@@ -130,7 +130,7 @@ const Homepage: React.FC<HomePageProps> = () => {
               <CardContent>
                 <LabelledpieChart className="aspect-[4/3]" />
               </CardContent>
-            </Card>
+            </Card> */}
             {/* Top domains card */}
             <Card>
               <CardHeader>

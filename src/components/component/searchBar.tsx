@@ -31,7 +31,7 @@ const SearchBar: React.FC<searchBarProps> = ({setDomains}) => {
     console.log(formData);
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/api/domain/query", {
+      const res = await fetch(`${process.env.HOSTED_URL}/api/domain/query`, {
         method: "POST",
         headers: {
           ContentType: "application/json",

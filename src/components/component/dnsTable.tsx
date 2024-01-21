@@ -41,7 +41,7 @@ const DnsTable = ({
         try {
           console.log("domain", domain);
           const res = await fetch(
-            "http://localhost:3000/api/DNSRecord/findByDomainId",
+            `${process.env.HOSTED_URL}/api/DNSRecord/findByDomainId`,
             {
               method: "POST",
               headers: {
@@ -87,7 +87,7 @@ const DnsTable = ({
   const onSubmit = handleSubmit(async (formData) => {
     console.log(formData);
     try {
-      const res = await fetch("http://localhost:3000/api/DNSRecord/query", {
+      const res = await fetch(`${process.env.HOSTED_URL}/api/DNSRecord/query`, {
         method: "POST",
         headers: {
           ContentType: "application/json",

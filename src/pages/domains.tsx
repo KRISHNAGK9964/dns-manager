@@ -33,7 +33,7 @@ const domains: React.FC<domainsProps> = () => {
     const fetchDomains = async () => {
       console.log("fetchDomains");
       try {
-        const res = await fetch("http://localhost:3000/api/domain/getAll");
+        const res = await fetch(`${process.env.HOSTED_URL}/api/domain/getAll`);
         if (res.ok) {
           const data = await res.json();
           console.log("data", data);
@@ -67,7 +67,7 @@ const domains: React.FC<domainsProps> = () => {
     console.log(formData);
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/api/domain/create", {
+      const res = await fetch(`${process.env.HOSTED_URL}/api/domain/create`, {
         method: "POST",
         headers: {
           Content_Type: "application/json",
@@ -106,7 +106,7 @@ const domains: React.FC<domainsProps> = () => {
       setLoading(true);
       try {
         console.log(selectedDomain);
-        const res = await fetch("http://localhost:3000/api/domain/delete", {
+        const res = await fetch(`${process.env.HOSTED_URL}/api/domain/delete`, {
           method: "POST",
           headers: {
             ContentType: "application/json",
