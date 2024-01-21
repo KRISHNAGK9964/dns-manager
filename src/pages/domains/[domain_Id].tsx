@@ -38,7 +38,7 @@ const Domain: React.FC<domainProps> = () => {
       if (domainId) {
         setLoading(true);
         try {
-          const res = await fetch("http://localhost:3000/api/domain/findById", {
+          const res = await fetch(`api/domain/findById`, {
             method: "POST",
             headers: {
               ContentType: "application/json",
@@ -76,7 +76,7 @@ const Domain: React.FC<domainProps> = () => {
     if (domain) {
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:3000/api/DNSRecord/create", {
+        const res = await fetch(`/api/DNSRecord/create`, {
           method: "POST",
           headers: {
             Content_Type: "application/json",
@@ -126,7 +126,7 @@ const Domain: React.FC<domainProps> = () => {
     setLoading(true);
     try {
       console.log(selectedDomain);
-      const res = await fetch("http://localhost:3000/api/domain/delete", {
+      const res = await fetch(`api/domain/delete`, {
         method: "POST",
         headers: {
           ContentType: "application/json",
@@ -187,7 +187,7 @@ const Domain: React.FC<domainProps> = () => {
         const parsedData = JSON.parse(fileContents);
         console.log(fileContents, parsedData);
 
-        const response = await fetch("/api/DNSRecord/bulk-upload", {
+        const response = await fetch(`api/DNSRecord/bulk-upload`, {
           method: "POST",
           headers: {
             ContentType: "application/json",
