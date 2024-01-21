@@ -41,7 +41,7 @@ const DnsTable = ({
         try {
           console.log("domain", domain);
           const res = await fetch(
-            `api/DNSRecord/findByDomainId`,
+            `https://dns-manager-seven.vercel.app/api/DNSRecord/findByDomainId`,
             {
               method: "POST",
               headers: {
