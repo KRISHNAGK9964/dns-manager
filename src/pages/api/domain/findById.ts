@@ -1,5 +1,4 @@
 import { connectMongoDB } from "@/lib/mongodb";
-import DNSRecord from "@/models/DNSRecord";
 import Domain from "@/models/domain";
 
 // // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
@@ -13,14 +12,15 @@ export default async function handler(req: NextApiRequest , res:NextApiResponse)
       //incase of request from localhost
       body = JSON.parse(req.body as unknown as string);
     }
-    const id = body._id;
+    const _id = body._id;
     console.log(body);
     await connectMongoDB();
-    await Domain.deleteOne({_id: id});
-    await DNSRecord.deleteMany({domainId:id});
-    return res.status(201).json({message: 'Domain deleted'});
+    // const queryregexp = `/${query}/`;
+    const doc = await Domain.findById(_id)
+    console.log(doc);
+    return res.status(201).json(doc);
   } catch (error:any) {
-    console.log("Domain deletion error",error?.message);
+    console.log("Domain query error",error?.message);
     res.status(400);
   }
 }

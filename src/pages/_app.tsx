@@ -1,7 +1,6 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { SessionProvider } from "next-auth/react";
-import Header from "@/components/component/header";
 
 export default function App({
   Component,
@@ -9,6 +8,7 @@ export default function App({
 }: AppProps) {
   
   return (
+    // wrap the application with SessionProvider to access session object nextAuth
     <SessionProvider session={session}>
       <Component {...pageProps} />
     </SessionProvider>

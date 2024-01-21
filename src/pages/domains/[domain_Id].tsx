@@ -1,25 +1,219 @@
 import DnsTable from "@/components/component/dnsTable";
+import EditRecordModal from "@/components/component/editRecordModal";
 import Header from "@/components/component/header";
-import React from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import TimeAgo from "react-timeago";
+import fs from "fs";
 
+type dnsRecordFormData = {
+  name: string;
+  type: string;
+  value: string;
+  timeLimit: number;
+  priority: number;
+  comment: string;
+};
 const Domain = () => {
+  const { data: session, status } = useSession();
+
+  const router = useRouter();
+  const [domain, setDomain] = useState({
+    _id: "1",
+    name: "example.com",
+    createdAt: "2022-01-17",
+    updatedAt: "2024-01-19T12:02:09.719Z",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, seterror] = useState("");
+  useEffect(() => {
+    const fetchDomain = async () => {
+      const domainId = router.query.domain_Id;
+      console.log("domainId: ", domainId);
+      if (domainId) {
+        setLoading(true);
+        try {
+          const res = await fetch("http://localhost:3000/api/domain/findById", {
+            method: "POST",
+            headers: {
+              ContentType: "application/json",
+            },
+            body: JSON.stringify({ _id: domainId }),
+          });
+          if (res.ok) {
+            console.log("Domain fetched");
+            const domain = await res.json();
+            console.log(domain);
+            setDomain(domain);
+            setLoading(false);
+          }
+        } catch (error: any) {
+          seterror(error.message);
+          console.log(error);
+        }
+      }
+    };
+    fetchDomain();
+  }, [router]);
+
+  const {
+    register,
+    setValue,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<dnsRecordFormData>();
+  const handleAddRecord = handleSubmit(async (formData) => {
+    console.log(formData);
+    try {
+      setLoading(true);
+      const res = await fetch("http://localhost:3000/api/DNSRecord/create", {
+        method: "POST",
+        headers: {
+          Content_Type: "application/json",
+        },
+        body: JSON.stringify({
+          domainId: domain._id,
+          name: formData.name,
+          type: formData.type,
+          value: formData.value,
+          timeLimit: formData.timeLimit,
+          priority: formData.priority,
+          comment: formData.comment,
+        }),
+      });
+
+      if (res.ok) {
+        console.log("DNS record created");
+        const text = await res.text();
+        console.log(text);
+        reset();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  });
+
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState({});
+
+  const [selectedDomain, setSelectedDomain] = useState({});
+  const [deleteModalOpen, setdeleteModalOpen] = useState(false);
+  const handleDeleteDomain = (domain: any) => {
+    toggleDeleteModal();
+    setSelectedDomain(domain);
+  };
+  const toggleDeleteModal = () => {
+    setdeleteModalOpen(!deleteModalOpen);
+  };
+  const handleConfirmDelete = async (domain: any) => {
+    setLoading(true);
+    try {
+      console.log(selectedDomain);
+      const res = await fetch("http://localhost:3000/api/domain/delete", {
+        method: "POST",
+        headers: {
+          ContentType: "application/json",
+        },
+        body: JSON.stringify(domain),
+      });
+      if (res.ok) {
+        console.log("Domain deleted");
+        const text = await res.text();
+        console.log(text);
+        // setSelectedDomain("");
+        // toggleDeleteModal();
+        router.replace("/domains");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
+
+  const [File, setFile] = useState<File | null>(null);
+
+  const readFile = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (event) => {
+        if (event.target) {
+          resolve(event.target.result as string);
+        }
+      };
+
+      reader.onerror = (error) => {
+        reject(error);
+      };
+
+      reader.readAsText(file);
+    });
+  };
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const isJsonFile = file.name.endsWith(".json");
+
+      if (!isJsonFile) {
+        alert("Please upload a valid JSON file.");
+        return;
+      }
+      setFile(e.target.files[0]);
+      const confirmUpload = window.confirm(
+        `upload ${e.target.files[0].name} \n Are you sure JSON file is formatted correctly?`
+      );
+      if (!confirmUpload) {
+        return;
+      }
+      try {
+        setLoading(true);
+        console.log(file);
+        const fileContents = await readFile(file);
+        const parsedData = JSON.parse(fileContents);
+        console.log(fileContents, parsedData);
+
+        const response = await fetch("/api/DNSRecord/bulk-upload", {
+          method: "POST",
+          headers: {
+            ContentType: "application/json",
+          },
+          body: JSON.stringify({ domainId: domain._id, data: parsedData }),
+        });
+
+        const data = await response.json();
+        console.log(data);
+        setFile(null);
+      } catch (error) {
+        console.error("Error uploading DNS records:", error);
+        alert("An error occurred while uploading DNS records.");
+      }
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Header />
-      <div className="border-b">
+      <section className="border-b">
         <div className=" flex items-center justify-between p-8 max-w-screen-xl m-auto">
           <div className="flex-1 ">
-            <h1 className="text-3xl font-semibold">ihoddps.com</h1>
+            <h1 className="text-3xl font-semibold">{domain.name}</h1>
           </div>
           <div>
-            <a
-              // onClick={() => {
-              //   handleDeleteDomain(domain);
-              // }}
+            <button
+              type="button"
+              onClick={() => {
+                handleDeleteDomain(domain);
+              }}
               className="cursor-pointer hover:shadow-sm hover:bg-gray-50 p-2  border  rounded-md  font-medium text-red-500 dark:text-blue-500 "
             >
               Delete
-            </a>
+            </button>
           </div>
         </div>
         <div className="flex flex-wrap p-8 justify-between max-w-screen-xl mx-auto">
@@ -37,30 +231,35 @@ const Domain = () => {
           </div>
           <div className=" w-1/3 mb-2">
             <p className="pt-2">Creator</p>
-            <p className="pt-2 font-medium">krishnagk9964</p>
+            <p className="pt-2 font-medium">{session?.user?.name}</p>
           </div>
           <div className=" w-1/3 mb-4">
             <p className="pt-2">Age</p>
-            <p className="pt-2 font-medium">3d</p>
+            <div className="pt-2 font-medium">
+              <TimeAgo date={domain.createdAt}></TimeAgo>
+            </div>
           </div>
           <div className=" w-1/3 mb-4">
             <p className="pt-2">Edge Network</p>
-            <p className="pt-2 font-medium"> Active</p>
+            <p className="pt-2 font-medium">✅ Active</p>
           </div>
         </div>
         <div className="max-w-screen-xl mx-auto  px-8 p-4">
-          <span className=" text-blue-500 hover:underline cursor-pointer">
+          <Link
+            href={"/domains"}
+            className=" text-blue-500 hover:underline cursor-pointer"
+          >
             ⬅️Back
-          </span>
+          </Link>
         </div>
-      </div>
-      <div className="">
+      </section>
+      <section className="">
         <div className="max-w-screen-xl p-8 py-6 mx-auto">
           <p className="text-3xl font-semibold">DNS Records</p>
         </div>
         <div className="px-8 max-w-screen-xl mx-auto">
-          <div className="flex gap-14 justify-between">
-            <p className="flex-1">
+          <div className="flex gap-14 justify-between flex-wrap">
+            <p className="flex-1 min-w-60">
               DNS records point to services your domain uses, like forwarding
               your domain or setting up an email service. You can enable
               Vercel's nameservers or use a third-party to manage your domain's
@@ -73,19 +272,28 @@ const Domain = () => {
               >
                 Add Email Preset
               </button>
-              <button
-                type="button"
+              <input
+                type="file"
+                id="uploadJSON"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              <label
+                htmlFor="uploadJSON"
                 className="p-1 px-4 border hover:bg-gray-100 rounded-md font-medium"
               >
                 Upload Zone File
-              </button>
+              </label>
             </div>
           </div>
         </div>
 
         <div className="">
           <div className="max-w-screen-xl p-8 mx-auto">
-            <form className="border shadow-md rounded-lg overflow-hidden">
+            <form
+              onSubmit={handleAddRecord}
+              className="border shadow-md rounded-lg overflow-hidden"
+            >
               <div className="p-8 border-b">
                 <div className="flex flex-wrap">
                   <div className="flex flex-1 min-w-72">
@@ -97,8 +305,10 @@ const Domain = () => {
                         Name
                       </label>
                       <input
+                        {...register("name", { required: true })}
                         type="text"
                         id="Name"
+                        placeholder="Subdomain"
                         className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       />
                     </div>
@@ -111,6 +321,7 @@ const Domain = () => {
                       </label>
                       <select
                         id="Type"
+                        {...register("type", { required: true })}
                         className="block w-full p-2 mb-6 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       >
                         <option selected>A</option>
@@ -137,6 +348,8 @@ const Domain = () => {
                       <input
                         type="text"
                         id="Value"
+                        placeholder="76.76.21.21"
+                        {...register("value", { required: true })}
                         className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       />
                     </div>
@@ -151,10 +364,11 @@ const Domain = () => {
                         <input
                           type="number"
                           id="TTL"
-                          value={60}
+                          {...register("timeLimit", { required: true })}
                           aria-describedby="helper-text-explanation"
                           className="block w-16 p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                           placeholder="60"
+                          defaultValue={60}
                         />
                       </div>
                       <div>
@@ -167,6 +381,7 @@ const Domain = () => {
                         <input
                           type="number"
                           id="Priority"
+                          {...register("priority")}
                           aria-describedby="helper-text-explanation"
                           placeholder=""
                           className="block w-16 p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -186,6 +401,7 @@ const Domain = () => {
                     <input
                       type="text"
                       id="Comment"
+                      {...register("comment")}
                       placeholder="A comment explaining what this DNS record is for"
                       className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     />
@@ -196,7 +412,14 @@ const Domain = () => {
                 <div className="">
                   <p className="">
                     Learn more about{" "}
-                    <span className="text-blue-500">DNS Records🛩️</span>
+                    <Link
+                      href={
+                        "https://vercel.com/docs/projects/domains/managing-dns-records"
+                      }
+                      className="text-blue-500"
+                    >
+                      DNS Records🛩️
+                    </Link>
                   </p>
                 </div>
                 <button
@@ -209,10 +432,110 @@ const Domain = () => {
             </form>
           </div>
         </div>
-      </div>
-      <div className="">
+      </section>
+      <section className="">
         <div className="p-8 max-w-screen-xl mx-auto">
-          <DnsTable />
+          <DnsTable
+            domain={domain}
+            loading={loading}
+            setLoading={setLoading}
+            selectedRecord={selectedRecord}
+            setSelectedRecord={setSelectedRecord}
+            editModalOpen={editModalOpen}
+            setEditModalOpen={setEditModalOpen}
+          />
+        </div>
+      </section>
+      {/* <!-- Main modal --> */}
+      <div
+        id="authentication-modal"
+        tabIndex={-1}
+        aria-hidden="true"
+        className={` ${
+          editModalOpen ? "" : "hidden"
+        } backdrop-blur-sm verflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}
+      >
+        <div className=" top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 relative p-4 w-full  max-h-full">
+          {/* <!-- Modal content --> */}
+          <EditRecordModal
+            record={selectedRecord}
+            setEditModalOpen={setEditModalOpen}
+            setLoading={setLoading}
+          />
+        </div>
+      </div>
+      {/* delete conformation modal */}
+      <div
+        id="popup-modal"
+        tabIndex={-1}
+        className={`${
+          deleteModalOpen ? "" : "hidden"
+        } overflow-y-auto backdrop-blur-sm overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}
+      >
+        <div className="relative p-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md max-h-full">
+          <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <button
+              type="button"
+              onClick={toggleDeleteModal}
+              className="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+              data-modal-hide="popup-modal"
+            >
+              <svg
+                className="w-3 h-3"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 14 14"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                />
+              </svg>
+              <span className="sr-only">Close modal</span>
+            </button>
+            <div className="p-4 md:p-5 text-center">
+              <svg
+                className="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                />
+              </svg>
+              <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                Are you sure you want to delete {domain.name}
+              </h3>
+              <button
+                data-modal-hide="popup-modal"
+                type="button"
+                onClick={() => {
+                  handleConfirmDelete(domain);
+                }}
+                className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2"
+              >
+                Yes, I'm sure
+              </button>
+              <button
+                data-modal-hide="popup-modal"
+                type="button"
+                onClick={toggleDeleteModal}
+                className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+              >
+                No, cancel
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </>
