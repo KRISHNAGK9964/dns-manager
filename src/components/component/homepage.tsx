@@ -524,7 +524,7 @@ function LabelledpieChart(
 ) {
   return (
     <div {...props}>
-      <ResponsivePie
+      {/* <ResponsivePie
         data={[
           { id: "Jan", value: 111 }, // edit types type.d.ts at ResponsivePie.d.ts
           { id: "Feb", value: 157 },
@@ -556,7 +556,7 @@ function LabelledpieChart(
           },
         }}
         role="application"
-      />
+      /> */}
     </div>
   );
 }
