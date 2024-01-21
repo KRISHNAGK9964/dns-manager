@@ -38,7 +38,7 @@ const DnsTable = ({
   const [records, setRecords] = useState<Array<recordType>>([]);
   useEffect(() => {
     const fetchRecords = async () => {
-      if (domain) {
+      if (domain && !loading) {
         const notification = toast.loading("fetching DNS records");
         try {
           console.log("domain", domain);
