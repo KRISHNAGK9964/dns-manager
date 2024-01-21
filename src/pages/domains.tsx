@@ -32,19 +32,23 @@ const domains: React.FC<domainsProps> = () => {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchDomains = async () => {
-      console.log("fetchDomains");
-      const notification = toast.loading("fetching Domains");
-      try {
-        const res = await fetch(`https://dns-manager-seven.vercel.app/api/domain/getAll`);
-        if (res.ok) {
-          const data = await res.json();
-          console.log("data", data);
-          setDomains(data);
-          toast.success("domains fetched",{id: notification});
+      if (loading == false) {
+        console.log("fetchDomains");
+        const notification = toast.loading("fetching Domains");
+        try {
+          const res = await fetch(
+            `https://dns-manager-seven.vercel.app/api/domain/getAll`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            console.log("data", data);
+            setDomains(data);
+            toast.success("domains fetched", { id: notification });
+          }
+        } catch (error) {
+          console.log(error);
+          toast.error("could not fetch domains", { id: notification });
         }
-      } catch (error) {
-        console.log(error);
-        toast.error("could not fetch domains",{id:notification});
       }
     };
 
@@ -72,19 +76,22 @@ const domains: React.FC<domainsProps> = () => {
     const notification = toast.loading("Creating new Domain");
     try {
       setLoading(true);
-      const res = await fetch(`https://dns-manager-seven.vercel.app/api/domain/create`, {
-        method: "POST",
-        headers: {
-          Content_Type: "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.domain,
-        }),
-      });
+      const res = await fetch(
+        `https://dns-manager-seven.vercel.app/api/domain/create`,
+        {
+          method: "POST",
+          headers: {
+            Content_Type: "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.domain,
+          }),
+        }
+      );
 
       if (res.ok) {
         console.log("Domain created");
-        toast.success("Domain Added",{id:notification});
+        toast.success("Domain Added", { id: notification });
         const text = await res.text();
         console.log(text);
         reset();
@@ -92,7 +99,7 @@ const domains: React.FC<domainsProps> = () => {
       }
     } catch (error: any) {
       alert(error.message);
-      toast.error(error.message,{id:notification})
+      toast.error(error.message, { id: notification });
     }
     setLoading(false);
   });
@@ -114,16 +121,19 @@ const domains: React.FC<domainsProps> = () => {
       setLoading(true);
       try {
         console.log(selectedDomain);
-        const res = await fetch(`https://dns-manager-seven.vercel.app/api/domain/delete`, {
-          method: "POST",
-          headers: {
-            ContentType: "application/json",
-          },
-          body: JSON.stringify(selectedDomain),
-        });
+        const res = await fetch(
+          `https://dns-manager-seven.vercel.app/api/domain/delete`,
+          {
+            method: "POST",
+            headers: {
+              ContentType: "application/json",
+            },
+            body: JSON.stringify(selectedDomain),
+          }
+        );
         if (res.ok) {
           console.log("Domain deleted");
-          toast.success("Domain deleted successfully",{id:notification});
+          toast.success("Domain deleted successfully", { id: notification });
           const text = await res.text();
           console.log(text);
           setSelectedDomain("");
@@ -131,7 +141,7 @@ const domains: React.FC<domainsProps> = () => {
         }
       } catch (error) {
         console.log(error);
-        toast.error("could not Delete the domain",{id:notification});
+        toast.error("could not Delete the domain", { id: notification });
       }
       setLoading(false);
     }
