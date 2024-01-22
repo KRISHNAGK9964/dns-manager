@@ -21,7 +21,7 @@ export default async function handler(
     const { email } = body as any;
     await connectMongoDB();
     console.log( email); 
-    const user = await User.findOne({email});
+    const user = await User.findOne({email}).select("_id");
     console.log("user: ", user);
     return res.status(201).json({user});
     

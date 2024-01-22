@@ -39,21 +39,21 @@ const Signin: React.FC<signinProps> = ({}) => {
   //onsubmission of form login if no account then signin
   const onSubmit = handleSubmit(async (formData) => {
     console.log(formData);
+    const notn = toast.loading("creating Your account")
     try {
       const { email } = formData;
-      // const resUserExists = await fetch(`https://dns-manager-seven.vercel.app/api/user/exists`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ email }),
-      // });
-      await connectMongoDB();
-      const resUserExists = await User.find({email});
-      const user = resUserExists;
+      const resUserExists = await fetch(`https://dns-manager-seven.vercel.app/api/user/exists`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const {user} = await resUserExists.json();
       if (user) {
         setError("email already in use");
-        toast.error("email id already exists. try logging in");
+        toast.error("email id already exists",{id:notn});
         return;
       }
 
@@ -65,19 +65,26 @@ const Signin: React.FC<signinProps> = ({}) => {
         body: JSON.stringify(formData),
       });
       if (res.ok) {
+        toast.success("account created, login to your account",{id:notn})
         console.log("user created");
         reset();
         router.replace("/login");
       }
     } catch (error: any) {
       console.log(error);
-      toast.error("User creation error");
+      toast.error("User creation error",{id:notn});
     }
   });
 
   // signin with google provider
   const signinWithGoogleProvider = async () => {
+    const notn = toast.loading("Signing you in")
     const res = await signIn("google", { callbackUrl: "/" });
+    if(res?.ok){
+      toast.success("Signed In",{id:notn});
+    }else{
+      toast.error("Error occured while signing in",{id:notn});
+    }
   };
 
   return (

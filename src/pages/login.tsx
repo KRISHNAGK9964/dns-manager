@@ -34,6 +34,7 @@ const Login: React.FC<signinProps> = ({}) => {
   const onSubmit = handleSubmit(async (formData) => {
     console.log(formData);
     // alert("Credential signin is not supported. please use signin with Google🔧🛠️")
+    const notn = toast.loading("Logging in");
     try {
       const { email, password } = formData;
       const res = await signIn("credentials", {
@@ -44,12 +45,13 @@ const Login: React.FC<signinProps> = ({}) => {
 
       if (res?.error) {
         setError(res?.error);
-        toast.error("invalid credentials");
+        toast.error("invalid credentials",{id:notn});
         console.log(res.error);
       }
       router.replace("/");
     } catch (error: any) {
       console.log(error);
+      toast.error("error occured while Login",{id:notn});
     }
   });
 

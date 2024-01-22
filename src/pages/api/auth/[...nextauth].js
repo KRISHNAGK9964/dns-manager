@@ -3,7 +3,7 @@ import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 // import { OAuth2Client } from "google-auth-library";
-import {connectMongodb} from "@/lib/mongodb";
+import { connectMongodb } from "@/lib/mongodb";
 import bcrypt from "bcryptjs";
 // console.log(process.env.GoogleClientId);
 export const authOptions = {
@@ -50,24 +50,22 @@ export const authOptions = {
         // console.log("user----", user);
         // return user;
         console.log(credentials);
-        const {email,password} = credentials;
+        const { email, password } = credentials;
         try {
-          const resUserExists = await fetch(`https://dns-manager-seven.vercel.app/api/user/exists`,{
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ email })
-          })
-          const {user} = await resUserExists.json();
-    
-          if(!user) {
-            return null;
-          }
+          const resUserExists = await fetch(
+            `http://localhost:3000/api/user/validate`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email, password }),
+            }
+          );
 
-          const passwordsMatch = await bcrypt.compare(password,user.password);
-
-          if(!passwordsMatch){
+          const { user } = await resUserExists.json();
+          console.log(user);
+          if (!user) {
             return null;
           }
           return user;
@@ -88,19 +86,22 @@ export const authOptions = {
       if (account.provider === "google") {
         const { name, email } = user;
         try {
-          const res = await fetch(`https://dns-manager-seven.vercel.app/api/user/create`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name,
-              email,
-              password:name
-            }),
-          });
+          const res = await fetch(
+            `https://dns-manager-seven.vercel.app/api/user/create`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name,
+                email,
+                password: name,
+              }),
+            }
+          );
 
-          if(res.ok){
+          if (res.ok) {
             return user;
           }
         } catch (error) {
