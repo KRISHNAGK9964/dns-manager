@@ -42,7 +42,7 @@ const Header: React.FC<headerProps> = ({}) => {
   return (
     <header className="sticky top-0 z-10 bg-transparent backdrop-blur px-4 lg:px-6  flex items-center border-b bg-gray-50">
       {/* icon */}
-      <Link className="flex items-center justify-center mr-8" href="#">
+      <Link className="flex items-center justify-center mr-8" href="/">
         <CloudIcon className="h-6 w-6" />
         <span className="sr-only">Vercel</span>
       </Link>
@@ -113,7 +113,7 @@ const Header: React.FC<headerProps> = ({}) => {
       <nav className="ml-auto flex gap-4 sm:gap-6">
         <Link
           className="hidden md:block text-sm my-auto font-medium hover:underline underline-offset-8"
-          href="#"
+          href="https://vercel.com/docs/projects/domains/managing-dns-records"
         >
           Docs
         </Link>

@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import TimeAgo from "react-timeago";
 import { config } from "../../../Constants";
+import useClickOutside from "@/hooks/useClickOutside";
 
 // ------------------------------------------------------------------------------------------------- //
 
@@ -131,11 +132,13 @@ const DnsTable = ({
   const toggleActionsDropdown = () => {
     setActionsDropdownOpen(!actionsDropdownOpen);
   };
+  const actionsDropdownRef = useClickOutside(()=>{setActionsDropdownOpen(false)})
 
   const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
   const toggleFilterDropdown = () => {
     setFilterDropdownOpen(!filterDropdownOpen);
   };
+  const filterDropdownRef = useClickOutside(()=>{setFilterDropdownOpen(false)});
 
   // -----------------------------------------------------------------------------------------------------------------------------------//
   // Filter Records By Type of Record
@@ -201,7 +204,8 @@ const DnsTable = ({
               Export
             </button>
             <div className="flex items-center space-x-3 w-full md:w-auto">
-              <button
+              <div ref={actionsDropdownRef}>
+                <button
                 id="actionsDropdownButton"
                 onClick={toggleActionsDropdown}
                 data-dropdown-toggle="actionsDropdown"
@@ -212,10 +216,11 @@ const DnsTable = ({
                 Actions
               </button>
               <div
+              
                 id="actionsDropdown"
                 className={`${
                   actionsDropdownOpen ? "" : "hidden"
-                } absolute mt-32 z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600`}
+                } absolute z-10 w-32 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600`}
               >
                 <ul
                   className="py-1 text-sm text-gray-700 dark:text-gray-200"
@@ -239,7 +244,9 @@ const DnsTable = ({
                   </a>
                 </div>
               </div>
-              <button
+              </div>
+              <div ref={filterDropdownRef}>
+                <button
                 id="filterDropdownButton"
                 onClick={toggleFilterDropdown}
                 data-dropdown-toggle="filterDropdown"
@@ -252,9 +259,10 @@ const DnsTable = ({
               </button>
               <div
                 id="filterDropdown"
+                
                 className={`${
                   filterDropdownOpen ? "" : "hidden"
-                } absolute mt-60 z-10 w-48  p-3 bg-white rounded-lg shadow dark:bg-gray-700`}
+                } absolute  z-10  p-3 bg-white rounded-lg shadow dark:bg-gray-700`}
               >
                 <h6 className="mb-3 text-sm font-medium text-gray-900 dark:text-white">
                   Choose Type
@@ -282,6 +290,8 @@ const DnsTable = ({
                   ))}
                 </ul>
               </div>
+              </div>
+              
             </div>
           </div>
         </div>
