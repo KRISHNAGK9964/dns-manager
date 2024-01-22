@@ -56,7 +56,7 @@ const Signin: React.FC<signinProps> = ({}) => {
         return;
       }
 
-      const res = await fetch(`https://dns-manager-seven.vercel.app/user/create`, {
+      const res = await fetch(`${config.url}/api/user/create`, {
         method: "POST",
         headers: {
           "Content-Type": "Application/json",
@@ -69,6 +69,8 @@ const Signin: React.FC<signinProps> = ({}) => {
         reset();
         router.replace("/login");
       }
+      console.log(res.status);
+      toast.error("Could not create account",{id:notn});
     } catch (error: any) {
       console.log(error);
       toast.error("User creation error",{id:notn});
