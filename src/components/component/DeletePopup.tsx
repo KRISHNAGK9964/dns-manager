@@ -1,6 +1,6 @@
 import React, { SVGProps } from 'react'
 
-const DeletePopup = ({deleteModalOpen,toggleDeleteModal,loading,handleConfirmDelete}:any) => {
+const DeletePopup = ({deleteModalOpen,toggleDeleteModal,loading,handleConfirmDelete,text}:any) => {
   return (
     <div
         id="delete-confirm_modal"
@@ -23,7 +23,7 @@ const DeletePopup = ({deleteModalOpen,toggleDeleteModal,loading,handleConfirmDel
             <div className="p-4 md:p-5 text-center">
               <AlertIcon className="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" />
               <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                Are you sure you want to delete this Domain
+                Are you sure you want to delete this {text}
               </h3>
               <button
                 data-modal-hide="popup-modal"

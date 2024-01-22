@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import TimeAgo from "react-timeago";
 import { config } from "../../../Constants";
 import Footer from "@/components/component/footer";
+import DeletePopup from "@/components/component/DeletePopup";
 
 // --------------------------------------------------------------------------------------------------------------------- //
 
@@ -42,28 +43,27 @@ const Domain: React.FC<domainProps> = () => {
         const notification = toast.loading("fetching the Domain");
         setLoading(true);
         try {
-          const res = await fetch(
-            `${config.url}/api/domain/findById`,
-            {
-              method: "POST",
-              headers: {
-                ContentType: "application/json",
-              },
-              body: JSON.stringify({ _id: domainId }),
-            }
-          );
+          const res = await fetch(`${config.url}/api/domain/findById`, {
+            method: "POST",
+            headers: {
+              ContentType: "application/json",
+            },
+            body: JSON.stringify({ _id: domainId }),
+          });
           if (res.ok) {
             console.log("Domain fetched");
             const domain = await res.json();
             console.log(domain);
             setDomain(domain);
-            toast.success("domain fetched successfully",{id:notification});
+            toast.success("domain fetched successfully", { id: notification });
             setLoading(false);
           }
         } catch (error: any) {
           seterror(error.message);
           alert(error.message);
-          toast.error("error occured while retrieving domain",{id:notification});
+          toast.error("error occured while retrieving domain", {
+            id: notification,
+          });
           console.log(error);
         }
       }
@@ -86,35 +86,32 @@ const Domain: React.FC<domainProps> = () => {
       const notification = toast.loading("creating DNS record");
       try {
         setLoading(true);
-        const res = await fetch(
-          `${config.url}/api/DNSRecord/create`,
-          {
-            method: "POST",
-            headers: {
-              Content_Type: "application/json",
-            },
-            body: JSON.stringify({
-              domainId: domain._id,
-              name: formData.name,
-              type: formData.type,
-              value: formData.value,
-              timeLimit: formData.timeLimit,
-              priority: formData.priority,
-              comment: formData.comment,
-            }),
-          }
-        );
+        const res = await fetch(`${config.url}/api/DNSRecord/create`, {
+          method: "POST",
+          headers: {
+            Content_Type: "application/json",
+          },
+          body: JSON.stringify({
+            domainId: domain._id,
+            name: formData.name,
+            type: formData.type,
+            value: formData.value,
+            timeLimit: formData.timeLimit,
+            priority: formData.priority,
+            comment: formData.comment,
+          }),
+        });
 
         if (res.ok) {
           console.log("DNS record created");
-          toast.success("DNS record Added",{id:notification});
+          toast.success("DNS record Added", { id: notification });
           const text = await res.text();
           console.log(text);
           reset();
         }
       } catch (error: any) {
         alert(error.message);
-        toast.error("could not create DNS record",{id:notification});
+        toast.error("could not create DNS record", { id: notification });
         console.log(error);
       }
       setLoading(false);
@@ -142,16 +139,13 @@ const Domain: React.FC<domainProps> = () => {
     setLoading(true);
     try {
       console.log(selectedDomain);
-      const res = await fetch(
-        `${config.url}/api/domain/delete`,
-        {
-          method: "POST",
-          headers: {
-            ContentType: "application/json",
-          },
-          body: JSON.stringify(selectedDomain),
-        }
-      );
+      const res = await fetch(`${config.url}/api/domain/delete`, {
+        method: "POST",
+        headers: {
+          ContentType: "application/json",
+        },
+        body: JSON.stringify(selectedDomain),
+      });
       if (res.ok) {
         console.log("Domain deleted");
         toast.success("Domain deletd successfully", { id: notification });
@@ -229,7 +223,9 @@ const Domain: React.FC<domainProps> = () => {
         }
       } catch (error: any) {
         console.error("Error uploading DNS records:", error.message);
-        toast.error("An error occurred while uploading DNS records.",{id:notification});
+        toast.error("An error occurred while uploading DNS records.", {
+          id: notification,
+        });
       }
       setLoading(false);
     }
@@ -243,7 +239,7 @@ const Domain: React.FC<domainProps> = () => {
       {/* Domain Specs */}
       {domain && (
         <section className="border-b">
-          <div className=" flex items-center justify-between p-8 max-w-screen-xl m-auto">
+          <div className=" flex items-center justify-between p-8 pb-0 max-w-screen-xl m-auto">
             <div className="flex-1 ">
               <h1 className="text-3xl font-semibold">{domain.name}</h1>
             </div>
@@ -260,32 +256,36 @@ const Domain: React.FC<domainProps> = () => {
               </button>
             </div>
           </div>
-          <div className="flex flex-wrap p-8 justify-between max-w-screen-xl mx-auto">
+          <div className="flex flex-wrap p-8 py-0 justify-between max-w-screen-xl mx-auto">
             <div className=" w-1/3 mb-4">
-              <p className="pt-2">Registrar</p>
+              <p className="pt-2 text-[14px] text-gray-500">Registrar</p>
+              <p className="pt-2 font-medium text-[14px] text-gray-900">
+                Third Party
+              </p>
+            </div>
+            <div className=" w-1/3 mb-4">
+              <p className="pt-2 text-[14px] text-gray-500">Nameservers</p>
               <p className="pt-2 font-medium">Third Party</p>
             </div>
             <div className=" w-1/3 mb-4">
-              <p className="pt-2">Nameservers</p>
-              <p className="pt-2 font-medium">Third Party</p>
-            </div>
-            <div className=" w-1/3 mb-4">
-              <p className="pt-2">Expiration Date</p>
+              <p className="pt-2 text-[14px] text-gray-500">Expiration Date</p>
               <p className="pt-2 font-medium">-</p>
             </div>
             <div className=" w-1/3 mb-2">
-              <p className="pt-2">Creator</p>
+              <p className="pt-2 text-[14px] text-gray-500">Creator</p>
               <p className="pt-2 font-medium">{session?.user?.name}</p>
             </div>
             <div className=" w-1/3 mb-4">
-              <p className="pt-2">Age</p>
+              <p className="pt-2 text-[14px] text-gray-500">Age</p>
               <div className="pt-2 font-medium">
                 <TimeAgo date={domain.createdAt}></TimeAgo>
               </div>
             </div>
             <div className=" w-1/3 mb-4">
-              <p className="pt-2">Edge Network</p>
-              <p className="pt-2 font-medium">✅ Active</p>
+              <p className="pt-2 text-[14px] text-gray-500">Edge Network</p>
+              <p className="pt-2 font-medium text-[14px] text-gray-900">
+                <CircleChecktIcon className="w-6 h-6 inline text-blue-500" /> Active
+              </p>
             </div>
           </div>
           <div className="max-w-screen-xl mx-auto  px-8 p-4">
@@ -293,7 +293,7 @@ const Domain: React.FC<domainProps> = () => {
               href={"/domains"}
               className=" text-blue-500 hover:underline cursor-pointer"
             >
-              ⬅️Back
+              <ArrowLefttIcon className="w-4 h-4 inline"></ArrowLefttIcon>Back
             </Link>
           </div>
         </section>
@@ -496,7 +496,7 @@ const Domain: React.FC<domainProps> = () => {
           />
         </div>
       </section>
-                      <Footer />
+      <Footer />
       {/* <!-- Edit DNS Record modal --> */}
       <div
         id="authentication-modal"
@@ -518,51 +518,7 @@ const Domain: React.FC<domainProps> = () => {
       </div>
 
       {/* delete conformation modal */}
-      <div
-        id="popup-modal"
-        tabIndex={-1}
-        className={`${
-          deleteModalOpen ? "" : "hidden"
-        } overflow-y-auto backdrop-blur-sm overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}
-      >
-        <div className="relative p-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md max-h-full">
-          <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            <button
-              type="button"
-              onClick={toggleDeleteModal}
-              className="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-              data-modal-hide="popup-modal"
-            >
-              <CrossIcon className="w-3 h-3" />
-              <span className="sr-only">Close modal</span>
-            </button>
-            <div className="p-4 md:p-5 text-center">
-              <AlertIcon className="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" />
-              <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                Are you sure you want to delete {selectedDomain?.name}
-              </h3>
-              <button
-                data-modal-hide="popup-modal"
-                type="button"
-                onClick={() => {
-                  handleConfirmDelete();
-                }}
-                className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2"
-              >
-                Yes, I'm sure
-              </button>
-              <button
-                data-modal-hide="popup-modal"
-                type="button"
-                onClick={toggleDeleteModal}
-                className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-              >
-                No, cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <DeletePopup deleteModalOpen={deleteModalOpen} toggleDeleteModal={toggleDeleteModal} loading={loading} handleConfirmDelete={handleConfirmDelete} text={selectedDomain?.name}/>
     </>
   );
 };
@@ -620,6 +576,44 @@ function AlertIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
         strokeLinejoin="round"
         strokeWidth="2"
         d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+      />
+    </svg>
+  );
+}
+function ArrowLefttIcon(
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+      />
+    </svg>
+  );
+}
+function CircleChecktIcon(
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
+) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      <path
+        fillRule="evenodd"
+        d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+        clipRule="evenodd"
       />
     </svg>
   );

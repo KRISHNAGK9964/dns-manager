@@ -147,14 +147,16 @@ const Header: React.FC<headerProps> = ({}) => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>{session.user?.email}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href={"/settings"} className="w-full">Settings</Link>
+              </DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
                   signOut();
                 }}
-                className="cursor-pointer"
+                className="cursor-pointer w-full hover:bg-gray-50"
               >
                 Logout
               </DropdownMenuItem>
