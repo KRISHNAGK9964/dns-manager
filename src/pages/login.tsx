@@ -48,6 +48,7 @@ const Login: React.FC<signinProps> = ({}) => {
         toast.error("invalid credentials",{id:notn});
         console.log(res.error);
       }
+      toast.success("Logged in",{id:notn});
       router.replace("/");
     } catch (error: any) {
       console.log(error);

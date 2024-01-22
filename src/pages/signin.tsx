@@ -81,7 +81,7 @@ const Signin: React.FC<signinProps> = ({}) => {
     const res = await signIn("google", { callbackUrl: "/" });
     if(res?.ok){
       toast.success("Signed In",{id:notn});
-    }else{
+    }else if(res?.error){
       toast.error("Error occured while signing in",{id:notn});
     }
   };
