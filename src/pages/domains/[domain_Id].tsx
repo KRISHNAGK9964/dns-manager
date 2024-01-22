@@ -9,6 +9,7 @@ import React, { ChangeEvent, SVGProps, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import TimeAgo from "react-timeago";
+import { config } from "../../../Constants";
 
 // --------------------------------------------------------------------------------------------------------------------- //
 
@@ -41,7 +42,7 @@ const Domain: React.FC<domainProps> = () => {
         setLoading(true);
         try {
           const res = await fetch(
-            `https://dns-manager-seven.vercel.app/api/domain/findById`,
+            `${config.url}/api/domain/findById`,
             {
               method: "POST",
               headers: {
@@ -85,7 +86,7 @@ const Domain: React.FC<domainProps> = () => {
       try {
         setLoading(true);
         const res = await fetch(
-          `https://dns-manager-seven.vercel.app/api/DNSRecord/create`,
+          `${config.url}/api/DNSRecord/create`,
           {
             method: "POST",
             headers: {
@@ -141,7 +142,7 @@ const Domain: React.FC<domainProps> = () => {
     try {
       console.log(selectedDomain);
       const res = await fetch(
-        `https://dns-manager-seven.vercel.app/api/domain/delete`,
+        `${config.url}/api/domain/delete`,
         {
           method: "POST",
           headers: {
@@ -208,7 +209,7 @@ const Domain: React.FC<domainProps> = () => {
         console.log(fileContents, parsedData);
 
         const response = await fetch(
-          `https://dns-manager-seven.vercel.app/api/DNSRecord/bulk-upload`,
+          `${config.url}/api/DNSRecord/bulk-upload`,
           {
             method: "POST",
             headers: {

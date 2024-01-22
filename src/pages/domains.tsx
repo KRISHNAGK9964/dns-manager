@@ -5,6 +5,7 @@ import React, { SVGProps, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import TimeAgo from "react-timeago";
+import { config } from "../../Constants";
 
 // ------------------------------------------------------------------------------------------------ //
 
@@ -37,7 +38,7 @@ const domains: React.FC<domainsProps> = () => {
         const notification = toast.loading("fetching Domains");
         try {
           const res = await fetch(
-            `https://dns-manager-seven.vercel.app/api/domain/getAll`
+            `${config.url}/api/domain/getAll`
           );
           if (res.ok) {
             const data = await res.json();
@@ -77,7 +78,7 @@ const domains: React.FC<domainsProps> = () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `https://dns-manager-seven.vercel.app/api/domain/create`,
+        `${config.url}/api/domain/create`,
         {
           method: "POST",
           headers: {
@@ -122,7 +123,7 @@ const domains: React.FC<domainsProps> = () => {
       try {
         console.log(selectedDomain);
         const res = await fetch(
-          `https://dns-manager-seven.vercel.app/api/domain/delete`,
+          `${config.url}/api/domain/delete`,
           {
             method: "POST",
             headers: {

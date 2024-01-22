@@ -2,6 +2,7 @@ import Link from "next/link";
 import React, { SVGProps, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { config } from "../../../Constants";
 
 // -------------------------------------------------------------------------------------------------------------- //
 
@@ -31,7 +32,7 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading}: any) 
     try {
       setLoading(true);
       const notification = toast.loading("saving changes to the database");
-      const res = await fetch(`https://dns-manager-seven.vercel.app/api/DNSRecord/edit`, {
+      const res = await fetch(`${config.url}/api/DNSRecord/edit`, {
         method: "POST",
         headers: {
           Content_Type: "application/json",
@@ -68,7 +69,7 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading}: any) 
     const notification = toast.loading("removing the record");
     try {
         setLoading(true);
-        const res = await fetch(`https://dns-manager-seven.vercel.app/api/DNSRecord/delete`, {
+        const res = await fetch(`${config.url}/api/DNSRecord/delete`, {
           method: "POST",
           headers: {
             Content_Type: "application/json",

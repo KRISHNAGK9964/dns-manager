@@ -2,6 +2,7 @@ import React, { SVGProps, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import TimeAgo from "react-timeago";
+import { config } from "../../../Constants";
 
 // ------------------------------------------------------------------------------------------------- //
 
@@ -43,7 +44,7 @@ const DnsTable = ({
         try {
           console.log("domain", domain);
           const res = await fetch(
-            `https://dns-manager-seven.vercel.app/api/DNSRecord/findByDomainId`,
+            `${config.url}/api/DNSRecord/findByDomainId`,
             {
               method: "POST",
               headers: {
@@ -92,7 +93,7 @@ const DnsTable = ({
     console.log(formData);
     const notification = toast.loading("searching records");
     try {
-      const res = await fetch(`https://dns-manager-seven.vercel.app/api/DNSRecord/query`, {
+      const res = await fetch(`${config.url}/api/DNSRecord/query`, {
         method: "POST",
         headers: {
           ContentType: "application/json",
