@@ -6,8 +6,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import { connectMongoDB } from "@/lib/mongodb";
-import User from "@/models/user";
+import {config} from '../../Constants'
 
 // ------------------------------------------------------------------------------------------------------------ //
 
@@ -42,7 +41,7 @@ const Signin: React.FC<signinProps> = ({}) => {
     const notn = toast.loading("creating Your account")
     try {
       const { email } = formData;
-      const resUserExists = await fetch(`https://dns-manager-seven.vercel.app/api/user/exists`, {
+      const resUserExists = await fetch(`${config.url}/api/user/exists`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
