@@ -40,7 +40,7 @@ const Header: React.FC<headerProps> = ({}) => {
 
   // ----------------------------------------------------------------------------------------------------------------- //
   return (
-    <header className="px-4 lg:px-6  flex items-center border-b bg-gray-50">
+    <header className="sticky top-0 z-10 bg-transparent backdrop-blur px-4 lg:px-6  flex items-center border-b bg-gray-50">
       {/* icon */}
       <Link className="flex items-center justify-center mr-8" href="#">
         <CloudIcon className="h-6 w-6" />

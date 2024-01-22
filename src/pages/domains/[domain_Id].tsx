@@ -2,7 +2,7 @@ import DnsTable from "@/components/component/dnsTable";
 import EditRecordModal from "@/components/component/editRecordModal";
 import Header from "@/components/component/header";
 import { domainType } from "@/util/functions";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ChangeEvent, SVGProps, useEffect, useState } from "react";
@@ -567,6 +567,23 @@ const Domain: React.FC<domainProps> = () => {
 };
 
 export default Domain;
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession(context);
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {
+      session,
+    },
+  };
+}
 
 function CrossIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
