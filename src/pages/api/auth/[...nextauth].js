@@ -53,7 +53,7 @@ export const authOptions = {
         const { email, password } = credentials;
         try {
           const resUserExists = await fetch(
-            `http://localhost:3000/api/user/validate`,
+            `https://dns-manager-seven.vercel.app/api/user/validate`,
             {
               method: "POST",
               headers: {
