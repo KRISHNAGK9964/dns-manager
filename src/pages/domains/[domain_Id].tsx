@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import TimeAgo from "react-timeago";
 import { config } from "../../../Constants";
+import Footer from "@/components/component/footer";
 
 // --------------------------------------------------------------------------------------------------------------------- //
 
@@ -495,7 +496,7 @@ const Domain: React.FC<domainProps> = () => {
           />
         </div>
       </section>
-
+                      <Footer />
       {/* <!-- Edit DNS Record modal --> */}
       <div
         id="authentication-modal"

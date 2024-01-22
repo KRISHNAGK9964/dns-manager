@@ -211,9 +211,9 @@ const domains: React.FC<domainsProps> = () => {
       setLoading(false);
     }
   };
-// ----------------------------------------------------------------------------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------------------------------------------------------------------------- //
   return (
-    <>
+    <div className="min-h-screen flex-col flex">
       <Header />
       {/* heading and Actions */}
       <div className="border-b">
@@ -245,9 +245,12 @@ const domains: React.FC<domainsProps> = () => {
         </div>
       </div>
       {/* Searchbar for domains */}
-      <SearchBar setDomains={setDomains}></SearchBar>
+      <div className="">
+        <SearchBar setDomains={setDomains}></SearchBar>
+      </div>
       {/* Domains Table */}
-      <div className="px-8 mx-auto max-w-screen-xl pb-10">
+      <div className="">
+        <div className="flex-1 px-8 mx-auto max-w-screen-xl pb-10">
         <div className="relative overflow-x-auto no-scrollbar shadow-md sm:rounded-lg ">
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700  bg-gray-100  dark:bg-gray-700 dark:text-gray-400">
@@ -379,6 +382,8 @@ const domains: React.FC<domainsProps> = () => {
           </table>
         </div>
       </div>
+      </div>
+      
       <Footer />
       {/* <!-- Add domain modal --> */}
       <div
@@ -417,18 +422,21 @@ const domains: React.FC<domainsProps> = () => {
                     Enter the domain that you would like to add:
                   </label>
                   <input
-                    
                     id="domain_name"
-                    {...register("domain", { required: "Domain name is required" ,
-                      pattern : {
-                        value: /^(?!:\/\/)(?!www\.)([a-zA-Z0-9-]{1,61}\.[a-zA-Z]{2,6})$/,
+                    {...register("domain", {
+                      required: "Domain name is",
+                      pattern: {
+                        value:
+                          /^(?!:\/\/)(?!www\.)([a-zA-Z0-9-]{1,61}\.[a-zA-Z]{2,6})$/,
                         message: "Invalid domain name",
-                      }
+                      },
                     })}
                     className="w-full p-2 px-3 text-sm font-medium rounded-md bg-[#F5F5F5] outline-none focus:ring-1"
                     placeholder="abcd@gmail.com"
                   />
-                  {errors.domain && <p className="text-red-500">{errors.domain.message}</p>}
+                  {errors.domain && (
+                    <p className="text-red-500">{errors.domain.message}</p>
+                  )}
                 </div>
 
                 <div className="px-2 py-2 flex items-center justify-between   rounded-t dark:border-gray-600">
@@ -470,7 +478,7 @@ const domains: React.FC<domainsProps> = () => {
         loading={loading}
         handleConfirmDelete={handleConfirmDeleteSelected}
       />
-    </>
+    </div>
   );
 };
 
@@ -492,7 +500,6 @@ export async function getServerSideProps(context: any) {
     },
   };
 }
-
 
 function CrossIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
