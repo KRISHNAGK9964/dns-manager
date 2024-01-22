@@ -2,8 +2,15 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { SVGProps, useEffect, useState } from "react";
-import { DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
+import {
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenu,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 // ---------------------------------------------------------------------------------------------------------------- //
 
@@ -12,27 +19,26 @@ interface headerProps {}
 // ---------------------------------------------------------------------------------------------------------------- //
 
 const Header: React.FC<headerProps> = ({}) => {
-
-// -------------------------------------------------------------------------------------------------------------- //
+  // -------------------------------------------------------------------------------------------------------------- //
   // check the rote for setting the tab
   const router = useRouter();
   let activeTab = "";
   if (router.pathname === "/settings") {
     activeTab = "Settings";
-  } else if (router.pathname.includes('/domain')) {
+  } else if (router.pathname.includes("/domain")) {
     activeTab = "Domains";
-  }else if (router.pathname === "/") {
+  } else if (router.pathname === "/") {
     activeTab = "Overview";
   }
-// ---------------------------------------------------------------------------------------------------------------- //
+  // ---------------------------------------------------------------------------------------------------------------- //
   // when session object is changed update the user profile image
   const [profilePic, setProfilePic] = useState("");
   const { data: session, status } = useSession();
-  useEffect(()=>{
-    if(session?.user?.image) setProfilePic(session.user.image);
-  },[session]);
+  useEffect(() => {
+    if (session?.user?.image) setProfilePic(session.user.image);
+  }, [session]);
 
-// ----------------------------------------------------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------------------------------------------------- //
   return (
     <header className="px-4 lg:px-6  flex items-center border-b bg-gray-50">
       {/* icon */}
@@ -112,7 +118,7 @@ const Header: React.FC<headerProps> = ({}) => {
           Docs
         </Link>
         {/* signin or userprofileAvatar */}
-        { session ? (
+        {session ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -120,17 +126,21 @@ const Header: React.FC<headerProps> = ({}) => {
                 size="icon"
                 variant="ghost"
               >
-                <img
-                  alt={""}
-                  className="rounded-full"
-                  height="32"
-                  src={profilePic}
-                  style={{
-                    aspectRatio: "32/32",
-                    objectFit: "cover",
-                  }}
-                  width="32"
-                />
+                {profilePic ? (
+                  <img
+                    alt={""}
+                    className="rounded-full"
+                    height="32"
+                    src={profilePic}
+                    style={{
+                      aspectRatio: "32/32",
+                      objectFit: "cover",
+                    }}
+                    width="32"
+                  />
+                ) : (
+                  <UserIcon />
+                )}
                 <span className="sr-only">Toggle user menu</span>
               </Button>
             </DropdownMenuTrigger>
@@ -140,7 +150,14 @@ const Header: React.FC<headerProps> = ({}) => {
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={()=>{signOut()}} className="cursor-pointer">Logout</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  signOut();
+                }}
+                className="cursor-pointer"
+              >
+                Logout
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
@@ -219,6 +236,23 @@ function DomainsIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
       viewBox="0 0 18 20"
     >
       <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+    </svg>
+  );
+}
+function UserIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className="w-6 h-6"
+    >
+      <path
+        fillRule="evenodd"
+        d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+        clipRule="evenodd"
+      />
     </svg>
   );
 }

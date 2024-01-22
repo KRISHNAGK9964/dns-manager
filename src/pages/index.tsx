@@ -1,5 +1,5 @@
 import { Inter } from "next/font/google";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signIn, signOut, getSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import Header from "@/components/component/header";
@@ -18,15 +18,13 @@ const Home: React.FC<homeProps> = ({}) => {
 
   // whenever the page reloaded or session changed this fucntion will check user.
   // redirect to signin page if not loggedin
-  useEffect(() => {
-    if (status !== "loading" && !session?.user) {
-      router.replace("/signin");
-    }
-  }, [session]);
+  // useEffect(() => {
+  //   if (status !== "loading" && !session?.user) {
+  //     router.replace("/signin");
+  //   }
+  // }, [session]);
 
-  return status == "loading" ? (
-    <></>
-  ) : (
+  return (
     <div className="flex flex-col min-h-screen ">
       <Header />
       <section className="flex-1">
@@ -38,3 +36,20 @@ const Home: React.FC<homeProps> = ({}) => {
 };
 
 export default Home;
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession(context);
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/signin",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {
+      session,
+    },
+  };
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { getSession, signIn, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { google_mark, apple_mark, undraw_secure, login } from "./../public";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
@@ -18,12 +18,8 @@ interface SigninFormData {
 
 // ------------------------------------------------------------------------------------------------------------- //
 
-const Signin: React.FC<signinProps> = ({}) => {
-  // whenever the page reloaded or session changed this fucntion will check user.
-  // redirect to home page if loggedin
-  // const session = await getServerSession(authOptions as any);
-  // if(session) redirect("/");
-
+const Login: React.FC<signinProps> = ({}) => {
+  const [error, setError] = useState("");
   const {
     register,
     setValue,
@@ -33,51 +29,38 @@ const Signin: React.FC<signinProps> = ({}) => {
   } = useForm<SigninFormData>();
   const router = useRouter();
   const { data: session, status } = useSession();
-  const [error, setError] = useState("");
+
   //onsubmission of form login if no account then signin
   const onSubmit = handleSubmit(async (formData) => {
     console.log(formData);
-    alert(
-      "Credential signin is not supported. please use signin with Google🔧🛠️"
-    );
+    // alert("Credential signin is not supported. please use signin with Google🔧🛠️")
     try {
-      const { email } = formData;
-      const resUserExists = await fetch(`https://dns-manager-seven.vercel.app/api/user/exists`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
+      const { email, password } = formData;
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
-      const { user } = await resUserExists.json();
 
-      if (user) {
-        setError("email already in use");
-        toast.error("email id already exists. try logging in");
-        return;
+      if (res?.error) {
+        setError(res?.error);
+        toast.error("invalid credentials");
+        console.log(res.error);
       }
-
-      const res = await fetch(`https://dns-manager-seven.vercel.app/user/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "Application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      if (res.ok) {
-        console.log("user created");
-        reset();
-        router.replace("/login");
-      }
+      router.replace("/");
     } catch (error: any) {
       console.log(error);
     }
   });
 
-  // signin with google provider
-  const signinWithGoogleProvider = async () => {
-    const res = await signIn("google", { callbackUrl: "/" });
-  };
+  // whenever the page reloaded or session changed this fucntion will check user.
+  // redirect to home page if loggedin
+  // useEffect(() => {
+  //   if(status !== 'loading' && session?.user){
+  //     router.replace('/');
+  //   }
+
+  // }, [session]);
 
   return (
     <div className="flex min-h-screen">
@@ -91,34 +74,11 @@ const Signin: React.FC<signinProps> = ({}) => {
       {/* right half */}
       <div className="bg-[#F5F5F5] flex-1 flex justify-center items-center">
         <div>
-          {/* Signin Text */}
-          <p className="text-4xl font-bold mb-1">Sign In</p>
+          {/* Login Text */}
+          <p className="text-4xl font-bold mb-1">Welcome back</p>
           <p className="font-normal text-base text-black mb-6">
-            Sign in to your account
+            Log in to your account
           </p>
-          {/* Signin provider buttons */}
-          <div className="flex space-x-5 mb-6">
-            <div
-              onClick={signinWithGoogleProvider}
-              className="bg-white p-2 px-4 flex items-center justify-center space-x-4m  rounded-[10px] space-x-2 cursor-pointer hover:bg-[#B5B5B5]"
-            >
-              <div className="relative w-3.5 h-3.5">
-                <Image src={google_mark} fill className="" alt={""} />
-              </div>
-              <p className="font-normal text-xs text-[#858585]">
-                Signin in with Google
-              </p>
-            </div>
-
-            <div className="bg-white p-2 px-4 flex items-center justify-center space-x-4m rounded-[10px] space-x-2 cursor-not-allowed">
-              <div className="relative w-3.5 h-3.5">
-                <Image src={apple_mark} fill className="" alt={""} />
-              </div>
-              <p className="font-normal text-xs text-[#858585]">
-                Signin in with Apple
-              </p>
-            </div>
-          </div>
           {/* Signin form */}
           <form
             onSubmit={onSubmit}
@@ -159,14 +119,14 @@ const Signin: React.FC<signinProps> = ({}) => {
               type="submit"
               className="bg-black rounded-xl w-full text-white font-bold text-base p-2"
             >
-              Sign In
+              Log In
             </button>
           </form>
 
           <p className="text-[#858585] text-sm text-center p-2">
-            already have an account?{" "}
-            <Link href={"/login"}>
-              <span className="text-[#346BD4]">Login here</span>
+            Don't have an account?{" "}
+            <Link href={"/signin"} className="">
+              <span className="text-[#346BD4]">Register here</span>
             </Link>
           </p>
         </div>
@@ -174,21 +134,4 @@ const Signin: React.FC<signinProps> = ({}) => {
     </div>
   );
 };
-export default Signin;
-
-export async function getServerSideProps(context: any) {
-  const session = await getSession(context);
-  if (session) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {
-      session,
-    },
-  };
-}
+export default Login;
