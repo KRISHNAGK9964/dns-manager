@@ -33,14 +33,14 @@ export default async function handler(
       await User.create({ name, email , password:hashedPassword});
       console.log("user created");
     }else{
-      res.status(400)
+      res.status(400).json({message: "email already in use"});
     }
     
     return res.status(201).json({ message: "User Registered" });
     
   } catch (error:any) {
     console.log("user creation error",error?.message);
-    res.status(400);
+    res.status(400).json({message: error});
   }
 
 }

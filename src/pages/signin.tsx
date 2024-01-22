@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { connectMongoDB } from "@/lib/mongodb";
+import User from "@/models/user";
 
 // ------------------------------------------------------------------------------------------------------------ //
 
@@ -37,20 +39,18 @@ const Signin: React.FC<signinProps> = ({}) => {
   //onsubmission of form login if no account then signin
   const onSubmit = handleSubmit(async (formData) => {
     console.log(formData);
-    alert(
-      "Credential signin is not supported. please use signin with Google🔧🛠️"
-    );
     try {
       const { email } = formData;
-      const resUserExists = await fetch(`https://dns-manager-seven.vercel.app/api/user/exists`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-      const { user } = await resUserExists.json();
-
+      // const resUserExists = await fetch(`https://dns-manager-seven.vercel.app/api/user/exists`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ email }),
+      // });
+      await connectMongoDB();
+      const resUserExists = await User.find({email});
+      const user = resUserExists;
       if (user) {
         setError("email already in use");
         toast.error("email id already exists. try logging in");
@@ -71,6 +71,7 @@ const Signin: React.FC<signinProps> = ({}) => {
       }
     } catch (error: any) {
       console.log(error);
+      toast.error("User creation error");
     }
   });
 
