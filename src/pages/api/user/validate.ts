@@ -24,11 +24,12 @@ export default async function handler(
     console.log(email);
     const user = await User.findOne({ email });
     if(!user) {
+      console.log("user dont exist");
       return res.status(400).json({message:"user don't exist,try signing in"});
     }
     const passwordsMatch = await bcrypt.compare(password, user.password);
     if (!passwordsMatch) {
-        "passwords didn't match"
+       console.log("passwords didn't match");
       return res.status(400).json({message:"wrong passsword"});
     }
     console.log("user: ", user);

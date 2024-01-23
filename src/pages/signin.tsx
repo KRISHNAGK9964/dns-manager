@@ -79,7 +79,7 @@ const Signin: React.FC<signinProps> = ({}) => {
 
   // signin with google provider
   const signinWithGoogleProvider = async () => {
-    const notn = toast.loading("Signing you in")
+    const notn = toast.loading("Signing you in. using your google account username as password")
     const res = await signIn("google", { callbackUrl: "/" });
     if(res?.ok){
       toast.success("Signed In",{id:notn});
