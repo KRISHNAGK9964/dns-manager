@@ -1,4 +1,4 @@
-import DnsTable from "@/components/component/dnsTable";
+import DnsTable, { recordType } from "@/components/component/dnsTable";
 import EditRecordModal from "@/components/component/editRecordModal";
 import Header from "@/components/component/header";
 import { domainType } from "@/util/functions";
@@ -121,7 +121,7 @@ const Domain: React.FC<domainProps> = () => {
   // ------------------------------------------------------------------------------------------------------------- //
   // Edit DNS record using Modal and Save to database
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState({});
+  const [selectedRecord, setSelectedRecord] = useState<recordType>();
 
   // ----------------------------------------------------------------------------------------------------------- //
   // delete the domain which consequently delete all associated DNS Records of it

@@ -11,7 +11,7 @@ type serchBarFormData = {
   query: string;
 };
 
-type recordType = {
+export type recordType = {
   _id: string;
   name: string;
   type: string;
