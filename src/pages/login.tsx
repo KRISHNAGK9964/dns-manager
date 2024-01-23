@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { signIn, useSession } from "next-auth/react";
-import { google_mark, apple_mark, undraw_secure, login } from "../public";
+import { login } from "../public";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
-// ------------------------------------------------------------------------------------------------------------ //
+// ----------------------------------------------------------------------------------------------------------------------------------------------- //
 
 interface signinProps {}
 
@@ -16,7 +16,7 @@ interface SigninFormData {
   password: string;
 }
 
-// ------------------------------------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------------------------------------------------ //
 
 const Login: React.FC<signinProps> = ({}) => {
   const [error, setError] = useState("");
@@ -30,7 +30,7 @@ const Login: React.FC<signinProps> = ({}) => {
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  //onsubmission of form login if no account then signin
+  //onsubmission of form login
   const onSubmit = handleSubmit(async (formData) => {
     console.log(formData);
     // alert("Credential signin is not supported. please use signin with Google🔧🛠️")
@@ -58,15 +58,7 @@ const Login: React.FC<signinProps> = ({}) => {
     }
   });
 
-  // whenever the page reloaded or session changed this fucntion will check user.
-  // redirect to home page if loggedin
-  // useEffect(() => {
-  //   if(status !== 'loading' && session?.user){
-  //     router.replace('/');
-  //   }
-
-  // }, [session]);
-
+// -------------------------------------------------------------------------------------------------------------------------------------------- //
   return (
     <div className="flex min-h-screen">
       {/* left half  */}
@@ -96,7 +88,7 @@ const Login: React.FC<signinProps> = ({}) => {
               <input
                 type="email"
                 id="email_address"
-                {...register("email", { required: true })}
+                {...register("email", { required: "Enter email id" })}
                 className="w-full p-2 px-3 text-sm font-medium rounded-[10px] bg-[#F5F5F5] outline-none focus:ring-1"
                 placeholder="abcd@gmail.com"
               />
@@ -109,7 +101,7 @@ const Login: React.FC<signinProps> = ({}) => {
                 type="password"
                 id="password"
                 {...register("password", {
-                  required: true,
+                  required: "Enter email id",
                   minLength: 8,
                   maxLength: 32,
                 })}

@@ -22,8 +22,6 @@ interface SigninFormData {
 const Signin: React.FC<signinProps> = ({}) => {
   // whenever the page reloaded or session changed this fucntion will check user.
   // redirect to home page if loggedin
-  // const session = await getServerSession(authOptions as any);
-  // if(session) redirect("/");
 
   const {
     register,
@@ -33,7 +31,6 @@ const Signin: React.FC<signinProps> = ({}) => {
     formState: { errors },
   } = useForm<SigninFormData>();
   const router = useRouter();
-  const { data: session, status } = useSession();
   const [error, setError] = useState("");
   //onsubmission of form login if no account then signin
   const onSubmit = handleSubmit(async (formData) => {
@@ -76,8 +73,8 @@ const Signin: React.FC<signinProps> = ({}) => {
       toast.error("User creation error",{id:notn});
     }
   });
-
-  // signin with google provider
+// ------------------------------------------------------------------------------------------------------------------------------------------------------ //
+// signin with google provider
   const signinWithGoogleProvider = async () => {
     const notn = toast.loading("Signing you in. using your google account username as password")
     const res = await signIn("google", { callbackUrl: "/" });
@@ -87,13 +84,12 @@ const Signin: React.FC<signinProps> = ({}) => {
       toast.error("Error occured while signing in",{id:notn});
     }
   };
-
+// --------------------------------------------------------------------------------------------------------------------------------------------------------- //
   return (
     <div className="flex min-h-screen">
       {/* left half  */}
       <div
-        className="hidden md:flex items-center justify-center w-2/4  bg-[url('../public/login.png')]  overflow-hidden text-white text-7xl font-bold 
-    "
+        className="hidden md:flex items-center justify-center w-2/4  bg-[url('../public/login.png')]  overflow-hidden text-white text-7xl font-bold"
       >
         <Image alt="" src={login} className=""></Image>
       </div>
@@ -140,7 +136,7 @@ const Signin: React.FC<signinProps> = ({}) => {
               <input
                 type="email"
                 id="email_address"
-                {...register("email", { required: true })}
+                {...register("email", { required: "enter email id" })}
                 className="w-full p-2 px-3 text-sm font-medium rounded-[10px] bg-[#F5F5F5] outline-none focus:ring-1"
                 placeholder="abcd@gmail.com"
               />
@@ -153,7 +149,7 @@ const Signin: React.FC<signinProps> = ({}) => {
                 type="password"
                 id="password"
                 {...register("password", {
-                  required: true,
+                  required: "enter password",
                   minLength: 8,
                   maxLength: 32,
                 })}
