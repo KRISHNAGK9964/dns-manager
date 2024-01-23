@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import TimeAgo from "react-timeago";
 import { config } from "../../../Constants";
 import useClickOutside from "@/hooks/useClickOutside";
+import { EllipsisIcon } from "@/pages/domains";
 
 // ------------------------------------------------------------------------------------------------- //
 
@@ -443,9 +444,9 @@ const DnsTable = ({
                     onClick={() => {
                       handleEditRecord(record);
                     }}
-                    className="cursor-pointer hover:shadow-sm p-2 -m-2  rounded-md hover:bg-white  font-medium text-red-500 dark:text-blue-500 "
+                    className="cursor-pointer hover:shadow-sm p-2 -m-2  rounded-md hover:bg-white  font-medium  dark:text-blue-500 "
                   >
-                    Edit
+                    <EllipsisIcon className="w-6 h-6" />
                   </button>
                 </td>
               </tr>
