@@ -84,10 +84,10 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading,setSele
           const text = await res.text();
           console.log(text);
           setSelectedRecords(selectedRecords.filter((r:string)=>r !== record._id));
-          setSelectedRecord(undefined);
           reset();
           toast.success("record removed successffully",{id:notification});
           setEditModalOpen(false);
+          setSelectedRecord(undefined);
         }
       } catch (error) {
         console.log(error);
@@ -97,7 +97,7 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading,setSele
   }
   // ---------------------------------------------------------------------------------------------------------------- //
   return (
-    <div className="max-w-screen-xl p-8 mx-auto">
+    <>{record && <div className="max-w-screen-xl p-8 mx-auto">
       <form
         onSubmit={handleAddRecord}
         className="border shadow-md rounded-lg overflow-hidden bg-white"
@@ -257,7 +257,10 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading,setSele
           </button>
         </footer>
       </form>
-    </div>
+    </div>}
+    </>
+    
+    
   );
 };
 

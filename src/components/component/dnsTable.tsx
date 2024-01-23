@@ -387,7 +387,11 @@ const DnsTable = ({
             {filteredRecords.map((record, index) => (
               <tr
                 key={index}
-                className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className={`${
+                  selectedRecords.includes(record._id)
+                    ? "bg-gray-100"
+                    : "bg-white"
+                }  border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600`}
               >
                 <td className="w-4 px-4 py-3">
                   <div className="flex items-center">
