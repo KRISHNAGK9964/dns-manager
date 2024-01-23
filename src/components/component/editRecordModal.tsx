@@ -17,7 +17,7 @@ type dnsRecordFormData = {
 
 //----------------------------------------------------------------------------------------------------------------------- //
 
-const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading}: any) => {
+const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading,setSelectedRecord,setSelectedRecords,selectedRecords}: any) => {
   // --------------------------------------------------------------------------------------------------------------------------------//
   // Edit Record and save to database
   const {
@@ -49,7 +49,7 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading}: any) 
       });
 
       if (res.ok) {
-        console.log("Domain upDated");
+        console.log("DNS record upDated");
         const text = await res.text();
         console.log(text);
         reset();
@@ -80,9 +80,10 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading}: any) 
         });
   
         if (res.ok) {
-          console.log("Domain deleted");
+          console.log("Record deleted");
           const text = await res.text();
           console.log(text);
+          setSelectedRecords(selectedRecords.filter((r:string)=>r == record._id));
           reset();
           toast.success("record removed successffully",{id:notification});
           setEditModalOpen(false);

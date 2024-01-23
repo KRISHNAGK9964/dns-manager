@@ -5,6 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 // import { OAuth2Client } from "google-auth-library";
 import { connectMongodb } from "@/lib/mongodb";
 import bcrypt from "bcryptjs";
+import {config} from '../../../../Constants';
 // console.log(process.env.GoogleClientId);
 export const authOptions = {
   // Configure one or more authentication providers
@@ -20,9 +21,9 @@ export const authOptions = {
     CredentialsProvider({
       id: "credentials",
       name: "credentials",
-      credentials: {
-        Credential: { type: "text" },
-      },
+      // credentials: {
+      //   Credential: { type: "text" },
+      // },
       authorize: async (credentials) => {
         // const token = credentials.Credential;
         // const ticket = await googleAuthClient.verifyIdToken({
@@ -49,11 +50,11 @@ export const authOptions = {
         // const user = { email, name, image };
         // console.log("user----", user);
         // return user;
-        console.log(credentials);
+        console.log("credentials",credentials);
         const { email, password } = credentials;
         try {
           const resUserExists = await fetch(
-            `https://dns-manager-seven.vercel.app/api/user/validate`,
+            `${config.url}/api/user/validate`,
             {
               method: "POST",
               headers: {
@@ -63,12 +64,12 @@ export const authOptions = {
             }
           );
 
-          const { user } = await resUserExists.json();
-          console.log(user);
-          if (!user) {
-            return null;
+          console.log(resUserExists);
+          if(resUserExists.ok){
+            const { user } = await resUserExists.json();
+            return user;
           }
-          return user;
+          return null;
         } catch (error) {
           console.log(error);
         }
@@ -87,7 +88,7 @@ export const authOptions = {
         const { name, email } = user;
         try {
           const res = await fetch(
-            `https://dns-manager-seven.vercel.app/api/user/create`,
+            `${config.url}/api/user/create`,
             {
               method: "POST",
               headers: {

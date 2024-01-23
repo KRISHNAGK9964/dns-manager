@@ -23,10 +23,13 @@ export default async function handler(
     await connectMongoDB();
     console.log(email);
     const user = await User.findOne({ email });
+    if(!user) {
+      return res.status(400).json({message:"user don't exist,try signing in"});
+    }
     const passwordsMatch = await bcrypt.compare(password, user.password);
     if (!passwordsMatch) {
         "passwords didn't match"
-      return res.status(201).json({user:null});
+      return res.status(400).json({message:"wrong passsword"});
     }
     console.log("user: ", user);
     return res.status(201).json({ user });

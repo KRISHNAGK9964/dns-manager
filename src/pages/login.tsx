@@ -43,16 +43,18 @@ const Login: React.FC<signinProps> = ({}) => {
         redirect: false,
       });
 
-      if (res?.error) {
-        setError(res?.error);
-        toast.error("invalid credentials",{id:notn});
-        console.log(res.error);
+      console.log(res);
+      if (res?.ok) {
+        toast.success("Logged in", { id: notn });
+        router.replace("/");
+        return;
       }
-      toast.success("Logged in",{id:notn});
-      router.replace("/");
+      // setError(res?.error);
+      toast.error("invalid credentials", { id: notn });
+      console.log(res?.error);
     } catch (error: any) {
       console.log(error);
-      toast.error("error occured while Login",{id:notn});
+      toast.error("error occured while Login", { id: notn });
     }
   });
 

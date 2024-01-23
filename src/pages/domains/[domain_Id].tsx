@@ -232,7 +232,43 @@ const Domain: React.FC<domainProps> = () => {
   };
 
   // ---------------------------------------------------------------------------------------------------------------------- //
-
+  // delete many DNS Records at once
+  const [selectedRecords, setSelectedRecords] = useState<Array<String>>([]);
+  const deletehandler = ()=>{
+    if(selectedDomain){
+      handleConfirmDelete();
+    }else{
+      handleConfirmDeleteSelected();
+    }
+  }
+  const handleConfirmDeleteSelected = async () => {
+    if (selectedRecords.length > 0) {
+      const notification = toast.loading("deleting the Records");
+      setLoading(true);
+      try {
+        console.log(selectedRecords);
+        const res = await fetch(`${config.url}/api/DNSRecord/deleteMany`, {
+          method: "POST",
+          headers: {
+            ContentType: "application/json",
+          },
+          body: JSON.stringify(selectedRecords),
+        });
+        if (res.ok) {
+          console.log("Records deleted");
+          toast.success("Records deleted successfully", { id: notification });
+          const text = await res.text();
+          console.log(text);
+          setSelectedRecords([]);
+          toggleDeleteModal();
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error("could not Delete the records", { id: notification });
+      }
+      setLoading(false);
+    }
+  };
   return (
     <>
       <Header />
@@ -301,11 +337,11 @@ const Domain: React.FC<domainProps> = () => {
       {/* Add DNS Record Section */}
       <section className="">
         <div className="max-w-screen-xl p-8 py-6 mx-auto">
-          <p className="text-3xl font-semibold">DNS Records</p>
+          <p className="text-2xl font-semibold text-gray-900">DNS Records</p>
         </div>
         <div className="px-8 max-w-screen-xl mx-auto">
           <div className="flex gap-14 justify-between flex-wrap">
-            <p className="flex-1 min-w-60">
+            <p className="flex-1 min-w-60 text-sm font-normal text-gray-500">
               DNS records point to services your domain uses, like forwarding
               your domain or setting up an email service. You can enable
               Vercel's nameservers or use a third-party to manage your domain's
@@ -314,7 +350,7 @@ const Domain: React.FC<domainProps> = () => {
             <div className="gap-5 flex justify-between items-center">
               <button
                 type="button"
-                className="p-1 px-4 border hover:bg-gray-100 rounded-md font-medium"
+                className="p-1 px-4 border hover:bg-gray-100 rounded-md text-sm font-medium"
               >
                 Add Email Preset
               </button>
@@ -327,7 +363,7 @@ const Domain: React.FC<domainProps> = () => {
               />
               <label
                 htmlFor="uploadJSON"
-                className="p-1 px-4 border hover:bg-gray-100 rounded-md font-medium"
+                className="p-1 px-4 border hover:bg-gray-100 rounded-md text-sm font-medium"
               >
                 Upload Zone File
               </label>
@@ -493,6 +529,9 @@ const Domain: React.FC<domainProps> = () => {
             setSelectedRecord={setSelectedRecord}
             editModalOpen={editModalOpen}
             setEditModalOpen={setEditModalOpen}
+            toggleDeleteModal={toggleDeleteModal}
+            selectedRecords={selectedRecords}
+            setSelectedRecords={setSelectedRecords}
           />
         </div>
       </section>
@@ -510,6 +549,9 @@ const Domain: React.FC<domainProps> = () => {
           {/* <!-- Modal content --> */}
           <EditRecordModal
             record={selectedRecord}
+            setSelectedRecord={setSelectedRecord}
+            setSelectedRecords={setSelectedRecords}
+            selectedRecords={selectedRecords}
             setEditModalOpen={setEditModalOpen}
             setLoading={setLoading}
             loading={loading}
@@ -518,7 +560,7 @@ const Domain: React.FC<domainProps> = () => {
       </div>
 
       {/* delete conformation modal */}
-      <DeletePopup deleteModalOpen={deleteModalOpen} toggleDeleteModal={toggleDeleteModal} loading={loading} handleConfirmDelete={handleConfirmDelete} text={selectedDomain?.name}/>
+      <DeletePopup deleteModalOpen={deleteModalOpen} toggleDeleteModal={toggleDeleteModal} loading={loading} handleConfirmDelete={deletehandler} text={selectedDomain ? selectedDomain.name : "records" }/>
     </>
   );
 };

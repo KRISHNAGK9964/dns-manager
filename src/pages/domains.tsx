@@ -120,7 +120,7 @@ const domains: React.FC<domainsProps> = () => {
 
   // --------------------------------------------------------------------------------------------- //
   // deleting a Domain using confermation modal
-  const [selectedDomain, setSelectedDomain] = useState({});
+  const [selectedDomain, setSelectedDomain] = useState<domainType>();
   const [deleteModalOpen, setdeleteModalOpen] = useState(false);
   const handleDeleteDomain = (domain: any) => {
     toggleDeleteModal();
@@ -129,6 +129,13 @@ const domains: React.FC<domainsProps> = () => {
   const toggleDeleteModal = () => {
     setdeleteModalOpen(!deleteModalOpen);
   };
+  const deletehandler = () =>{
+    if(selectedDomain){
+      handleConfirmDelete();
+    }else{
+      handleConfirmDeleteSelected();
+    }
+  }
   const handleConfirmDelete = async () => {
     if (selectedDomain) {
       const notification = toast.loading("deleting the Domain");
@@ -147,7 +154,8 @@ const domains: React.FC<domainsProps> = () => {
           toast.success("Domain deleted successfully", { id: notification });
           const text = await res.text();
           console.log(text);
-          setSelectedDomain("");
+          setSelectedDomains(selectedDomains.filter((_id) => _id !== selectedDomain._id));
+          setSelectedDomain(undefined);
           toggleDeleteModal();
         }
       } catch (error) {
@@ -249,11 +257,11 @@ const domains: React.FC<domainsProps> = () => {
         <SearchBar setDomains={setDomains}></SearchBar>
       </div>
       {/* Domains Table */}
-      <div className="">
-        <div className="flex-1 px-8 mx-auto max-w-screen-xl pb-10">
-        <div className="relative overflow-x-auto no-scrollbar shadow-md sm:rounded-lg ">
+      <div className="flex-1 flex">
+        <div className=" relative overflow-x-hidden flex-1 px-8 mx-auto max-w-screen-xl pb-10 ">
+        <div className="overflow-x-auto no-scrollbar shadow-md sm:rounded-lg ">
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700  bg-gray-100  dark:bg-gray-700 dark:text-gray-400">
+            <thead className="text-xs text-gray-700 bg-gray-100  dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" className="p-4">
                   <div className="flex items-center">
@@ -289,7 +297,7 @@ const domains: React.FC<domainsProps> = () => {
                 <th
                   ref={actionsDropdownRef}
                   scope="col"
-                  className="px-6 py-3 relative"
+                  className="px-6 py-3"
                 >
                   <button
                     type="button"
@@ -303,7 +311,7 @@ const domains: React.FC<domainsProps> = () => {
                   <div
                     className={`${
                       actionsDropdownOpen ? "flex-col" : "hidden"
-                    } absolute w-32 top-12 right-12 z-10  rounded-lg p-2  bg-white border shadow-md`}
+                    } absolute w-32 right-10 top-12 z-10  rounded-lg p-2  bg-white border shadow-md`}
                   >
                     <button
                       type="button"
@@ -470,14 +478,14 @@ const domains: React.FC<domainsProps> = () => {
         deleteModalOpen={deleteModalOpen}
         toggleDeleteModal={toggleDeleteModal}
         loading={loading}
-        handleConfirmDelete={handleConfirmDelete}
+        handleConfirmDelete={deletehandler}
       />
-      <DeletePopup
+      {/* <DeletePopup
         deleteModalOpen={deleteModalOpen}
         toggleDeleteModal={toggleDeleteModal}
         loading={loading}
         handleConfirmDelete={handleConfirmDeleteSelected}
-      />
+      /> */}
     </div>
   );
 };

@@ -34,6 +34,9 @@ const DnsTable = ({
   setSelectedRecord,
   editModalOpen,
   setEditModalOpen,
+  toggleDeleteModal,
+  selectedRecords,
+  setSelectedRecords
 }: any) => {
   // -------------------------------------------------------------------------------------------------------- //
   // fetch Records whenever domain chaged or some operation performed on database and store records as state
@@ -167,7 +170,26 @@ const DnsTable = ({
   }, [selectedTypes, records]);
 
   // ----------------------------------------------------------------------------------------------------------------------------- //
+  // delete many records at once
+  const RecordSelecthandler = (e: any, record: recordType) => {
+    if (e.target.checked) {
+      setSelectedRecords([...selectedRecords, record._id]);
+    } else {
+      setSelectedRecords(selectedRecords.filter((_id: string) => _id !== record._id));
+    }
+  };
+  const selectAllRecordshandler = (e: any) => {
+    if (e.target.checked) {
+      if (records) setSelectedRecords(records.map((r) => r._id));
+    } else {
+      setSelectedRecords([]);
+    }
+  };
 
+  const deleteActionhandler = () => {
+    toggleDeleteModal();
+  };
+  
   return (
     <div className="relative border  bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
       {/* Topbar (Actions and Serch , Filter , Export) */}
@@ -215,7 +237,7 @@ const DnsTable = ({
                 <ArrowDownIcon className="-ml-1 mr-1.5 w-5 h-5" />
                 Actions
               </button>
-              <div
+              {/* <div
               
                 id="actionsDropdown"
                 className={`${
@@ -240,10 +262,30 @@ const DnsTable = ({
                     href="#"
                     className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                   >
-                    Delete all
+                    Delete {selectedRecords.length}
                   </a>
                 </div>
-              </div>
+              </div> */}
+              <div
+                    className={`${
+                      actionsDropdownOpen ? "flex-col" : "hidden"
+                    } absolute w-32  z-10  rounded-lg p-2  bg-white border shadow-md`}
+                  >
+                    <button
+                      type="button"
+                      disabled
+                      className="w-full p-2 text-left font-normal text-base hover:bg-gray-100 rounded-md"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={deleteActionhandler}
+                      className="w-full p-2 text-left font-normal text-base hover:bg-gray-100 rounded-md text-red-500"
+                    >
+                      Delete
+                    </button>
+                  </div>
               </div>
               <div ref={filterDropdownRef}>
                 <button
@@ -304,6 +346,8 @@ const DnsTable = ({
               <th scope="col" className="p-4">
                 <div className="flex items-center">
                   <input
+                    onChange={selectAllRecordshandler}
+                    checked={selectedRecords.length == records.length && records.length != 0}
                     id="checkbox-all"
                     type="checkbox"
                     className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
@@ -350,7 +394,8 @@ const DnsTable = ({
                     <input
                       id="checkbox-table-search-1"
                       type="checkbox"
-                      onClick={(e) => e.stopPropagation()}
+                      checked={selectedRecords.includes(record._id)}
+                      onClick={(e) => RecordSelecthandler(e,record)}
                       className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                     <label
