@@ -84,6 +84,7 @@ const EditRecordModal = ({ record, setEditModalOpen, setLoading ,loading,setSele
           const text = await res.text();
           console.log(text);
           setSelectedRecords(selectedRecords.filter((r:string)=>r == record._id));
+          setSelectedRecord(undefined);
           reset();
           toast.success("record removed successffully",{id:notification});
           setEditModalOpen(false);
