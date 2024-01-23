@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { getSession, signIn, useSession } from "next-auth/react";
-import { google_mark, apple_mark, undraw_secure, login } from "./../public";
+import { google_mark, apple_mark, undraw_secure, login } from "../public";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
